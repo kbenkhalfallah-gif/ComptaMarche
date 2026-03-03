@@ -419,12 +419,34 @@ input:focus, select:focus, textarea:focus {
 .alert-warn { background: var(--gold-pale); color: var(--gold); border: 1px solid #e8d0a0; }
 
 /* SECTION TITLE */
-.section-title {
+h1.section-title {
   font-family: 'Playfair Display', serif;
   font-size: 22px;
   color: var(--green);
   margin-bottom: 20px;
+  font-weight: 700;
 }
+h2.history-group-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border);
+}
+h2.history-group-title:hover { border-color: var(--green); }
+.history-group-details { margin-bottom: 8px; }
+.history-group-details.collapsed { display: none; }
 
 @media (max-width: 480px) {
   .metrics { grid-template-columns: 1fr 1fr; }
@@ -449,23 +471,33 @@ input:focus, select:focus, textarea:focus {
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
   <div class="last-mod" id="last-mod-text">Aucune modification encore</div>
-  <div class="section-title">Vue d'ensemble</div>
+  <h1 class="section-title">Vue d'ensemble</h1>
   <div class="metrics" id="dashboard-metrics"></div>
+  <div class="card" style="margin-bottom:16px;">
+    <h2 style="font-family:'Playfair Display',serif;font-size:16px;color:var(--green);margin-bottom:12px;">Solde en caisse</h2>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <input type="number" id="caisse-input" step="0.01" min="0" placeholder="0.00" style="flex:1;" oninput="saveCaisse()">
+      <span style="font-family:'Playfair Display',serif;font-size:18px;color:var(--green);" id="caisse-display">0,00 €</span>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:6px;">Montant physiquement présent dans votre caisse. À mettre à jour manuellement.</div>
+  </div>
   <div class="action-row">
     <button class="btn btn-primary" onclick="showPage('sale')">＋ Enregistrer une vente</button>
     <button class="btn btn-gold" onclick="showPage('payment')">💶 Enregistrer un versement</button>
     <button class="btn btn-outline" onclick="showPage('products')">📦 Voir les produits</button>
   </div>
   <div class="action-row">
-    <button class="btn btn-outline btn-sm" onclick="exportData()">⬇ Exporter mes données</button>
-    <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-modal').classList.add('open')">⬆ Importer des données</button>
-    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-outline btn-sm" onclick="exportData()">⬇ Exporter (fichier JSON)</button>
+    <button class="btn btn-outline btn-sm" onclick="exportDataText()">⬇ Exporter (texte)</button>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-file-input').click()">⬆ Importer (fichier)</button>
+    <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importFromFile(event)">
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-modal').classList.add('open')">⬆ Importer (texte)</button>
   </div>
 </div>
 
 <!-- PRODUCTS -->
 <div id="page-products" class="page">
-  <div class="section-title">Produits</div>
+  <h1 class="section-title">Produits</h1>
   <div class="action-row">
     <button class="btn btn-primary" onclick="openProductModal(null)">＋ Ajouter un produit</button>
   </div>
@@ -474,7 +506,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- SALE -->
 <div id="page-sale" class="page">
-  <div class="section-title">Enregistrer une vente</div>
+  <h1 class="section-title">Enregistrer une vente</h1>
   <div class="card">
     <div class="form-group">
       <label>Mode de vente</label>
@@ -537,7 +569,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- PAYMENT -->
 <div id="page-payment" class="page">
-  <div class="section-title">Enregistrer un versement</div>
+  <h1 class="section-title">Enregistrer un versement</h1>
   <div class="card">
     <div id="reste-info" class="alert alert-info" style="margin-bottom:16px;"></div>
     <div class="form-group">
@@ -568,7 +600,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- SUPPLIES -->
 <div id="page-supplies" class="page">
-  <div class="section-title">Approvisionnements</div>
+  <h1 class="section-title">Approvisionnements</h1>
   <div class="action-row">
     <button class="btn btn-primary" onclick="openSupplyModal(null)">＋ Nouvel approvisionnement</button>
   </div>
@@ -577,7 +609,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- EXPENSES -->
 <div id="page-expenses" class="page">
-  <div class="section-title">Frais généraux</div>
+  <h1 class="section-title">Frais généraux</h1>
   <div class="action-row">
     <button class="btn btn-primary" onclick="openExpenseModal(null)">＋ Ajouter un frais</button>
   </div>
@@ -587,7 +619,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- HISTORY -->
 <div id="page-history" class="page">
-  <div class="section-title">Historique</div>
+  <h1 class="section-title">Historique</h1>
   <div class="tabs">
     <button class="tab-btn active" onclick="showHistoryTab('sales')">Ventes</button>
     <button class="tab-btn" onclick="showHistoryTab('payments')">Versements</button>
@@ -699,9 +731,13 @@ input:focus, select:focus, textarea:focus {
         <input type="number" id="em-amount" step="0.01" min="0" placeholder="0.00">
       </div>
       <div class="form-group">
-        <label>Date</label>
-        <input type="date" id="em-date">
+        <label>Dont réinvesti du CA (€)</label>
+        <input type="number" id="em-reinvesti" step="0.01" min="0" placeholder="0.00">
       </div>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="em-date">
     </div>
     <div id="em-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;">
@@ -731,6 +767,11 @@ input:focus, select:focus, textarea:focus {
     <div class="form-group">
       <label>Date du réapprovisionnement</label>
       <input type="date" id="rm-date">
+    </div>
+    <div class="form-group">
+      <label>Dont réinvesti du CA (€)</label>
+      <input type="number" id="rm-reinvesti" step="0.01" min="0" placeholder="0.00">
+      <div class="form-hint">Par défaut : totalité considérée comme réinvestie. Ajustez à la baisse si besoin.</div>
     </div>
     <div id="rm-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;">
@@ -784,6 +825,11 @@ input:focus, select:focus, textarea:focus {
     <div class="form-group">
       <label>Stock initial (quantité)</label>
       <input type="number" id="pm-stock" min="0" placeholder="0">
+    </div>
+    <div class="form-group">
+      <label>Dont réinvesti du CA (€)</label>
+      <input type="number" id="pm-reinvesti" step="0.01" min="0" placeholder="0.00" oninput="updatePmReinvestiHint()">
+      <div class="form-hint" id="pm-reinvesti-hint">Par défaut : totalité considérée comme réinvestie. Ajustez à la baisse si une partie vient de votre poche.</div>
     </div>
     <div class="divider"></div>
     <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--green);margin-bottom:12px;">Données existantes <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text3);font-style:italic;">(optionnel — pour intégrer l'historique avant l'application)</span></div>
@@ -854,6 +900,7 @@ function loadDB() {
   // Init expenses if missing
   if (!db.expenses) db.expenses = [];
   if (!db.supplies) db.supplies = [];
+  if (db.caisse === undefined) db.caisse = 0;
   // Migrate products: if no lots, create initial lot from purchasePrice + initialStock
   db.products.forEach(p => {
     if (!p.lots) {
@@ -945,16 +992,22 @@ function computeMetrics(productId = null) {
   const products = productId ? db.products.filter(p => p.id === productId) : db.products;
 
   let totalInvesti = 0;
+  let capitalPropre = 0;
+  let capitalReinvesti = 0;
   let initTotal = 0;
   let initEnc = 0;
   products.forEach(p => {
-    // Use lots for totalInvesti
     (p.lots || []).forEach(lot => {
-      totalInvesti += (parseFloat(lot.purchasePrice) || 0) * (parseInt(lot.qty) || 0);
+      const val = (parseFloat(lot.purchasePrice) || 0) * (parseInt(lot.qty) || 0);
+      totalInvesti += val;
+      const reinvestiAmt = parseFloat(lot.reinvesti) || 0;
+      capitalReinvesti += Math.min(reinvestiAmt, val);
+      capitalPropre += val - Math.min(reinvestiAmt, val);
     });
-    // Fallback for products without lots
     if (!p.lots || p.lots.length === 0) {
-      totalInvesti += (parseFloat(p.purchasePrice) || 0) * (parseInt(p.initialStock) || 0);
+      const val = (parseFloat(p.purchasePrice) || 0) * (parseInt(p.initialStock) || 0);
+      totalInvesti += val;
+      capitalPropre += val;
     }
     initTotal += parseFloat(p.initTotal) || 0;
     initEnc += parseFloat(p.initEnc) || 0;
@@ -968,19 +1021,30 @@ function computeMetrics(productId = null) {
     if (s.encaissee) totalEncaisse += amt;
   });
 
-  // Frais généraux (only for global metrics, not per product)
   let totalFrais = 0;
+  let fraisReinvesti = 0;
   if (!productId) {
-    totalFrais = (db.expenses || []).reduce((a, e) => a + (parseFloat(e.amount) || 0), 0);
+    (db.expenses || []).forEach(e => {
+      const amt = parseFloat(e.amount) || 0;
+      const rein = Math.min(parseFloat(e.reinvesti) || 0, amt);
+      totalFrais += amt;
+      fraisReinvesti += rein;
+    });
   }
+  const fraisPropre = totalFrais - fraisReinvesti;
 
   return {
     totalInvesti,
+    capitalPropre,
+    capitalReinvesti,
     totalVentes,
     totalEncaisse,
     resteEncaisser: totalVentes - totalEncaisse,
     beneficeReel: totalVentes - totalInvesti - totalFrais,
+    beneficePropre: totalVentes - capitalPropre - fraisPropre,
     totalFrais,
+    fraisReinvesti,
+    fraisPropre,
   };
 }
 
@@ -989,8 +1053,20 @@ function renderDashboard() {
   const m = computeMetrics();
   const totalInvestiGlobal = m.totalInvesti + m.totalFrais;
   const perf = totalInvestiGlobal > 0 ? Math.round(m.totalVentes / totalInvestiGlobal * 100) : 0;
+  const basePropreGlobal = m.capitalPropre + m.fraisPropre;
+  const perfPropre = basePropreGlobal > 0 ? Math.round(m.totalVentes / basePropreGlobal * 100) : 0;
+  const pctPropre = totalInvestiGlobal > 0 ? Math.round(m.capitalPropre / totalInvestiGlobal * 100) : 0;
+  const pctReinvesti = totalInvestiGlobal > 0 ? Math.round((m.capitalReinvesti + m.fraisReinvesti) / totalInvestiGlobal * 100) : 0;
   const el = document.getElementById('dashboard-metrics');
   el.innerHTML = `
+    <div class="metric">
+      <div class="metric-label">Capital propre investi</div>
+      <div class="metric-value" style="font-size:18px;">${fmt(m.capitalPropre)}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Réinvesti du CA</div>
+      <div class="metric-value" style="font-size:18px;">${fmt(m.capitalReinvesti + m.fraisReinvesti)}</div>
+    </div>
     <div class="metric">
       <div class="metric-label">Total des achats de marchandises</div>
       <div class="metric-value" style="font-size:18px;">${fmt(m.totalInvesti)}</div>
@@ -1001,7 +1077,8 @@ function renderDashboard() {
     </div>
     <div class="metric" style="grid-column:1/-1;background:var(--bg2);border:1.5px solid var(--border);">
       <div class="metric-label">Total investi (marchandises + frais)</div>
-      <div class="metric-value">${fmt(m.totalInvesti + m.totalFrais)}</div>
+      <div class="metric-value">${fmt(totalInvestiGlobal)}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:6px;">Capital propre ${pctPropre}% — Réinvesti du CA ${pctReinvesti}%</div>
     </div>
     <div class="metric">
       <div class="metric-label">Total des ventes</div>
@@ -1019,12 +1096,25 @@ function renderDashboard() {
       <div class="metric-label">Bénéfice réel (ventes − total investi)</div>
       <div class="metric-value green">${fmt(m.beneficeReel)}</div>
     </div>
+    <div class="metric" style="grid-column:1/-1;background:var(--green-pale);border:1.5px solid #b0d4b8;">
+      <div class="metric-label">Bénéfice propre (ventes − capital propre − frais propres)</div>
+      <div class="metric-value" style="color:var(--green);font-size:22px;">${fmt(m.beneficePropre)}</div>
+    </div>
     <div class="metric" style="grid-column:1/-1;background:var(--bg2);border:1.5px solid var(--border);text-align:center;">
-      <div class="metric-label">Indicateur de performance</div>
-      <div class="metric-value" style="color:${perf >= 100 ? 'var(--green)' : 'var(--gold)'};font-size:28px;">${perf} %</div>
+      <div class="metric-label">Indicateur de performance global</div>
+      <div class="metric-value" style="color:${perf >= 100 ? 'var(--green)' : 'var(--gold)'};font-size:28px;">${perf}%</div>
       <div style="font-size:11px;color:var(--text3);margin-top:4px;">${perf >= 100 ? '✓ Mise de fonds récupérée' : '⏳ Seuil non encore atteint'}</div>
     </div>
+    <div class="metric" style="grid-column:1/-1;background:var(--bg2);border:1.5px solid var(--border);text-align:center;">
+      <div class="metric-label">Indicateur de performance propre</div>
+      <div class="metric-value" style="color:${perfPropre >= 100 ? 'var(--green)' : 'var(--gold)'};font-size:28px;">${perfPropre}%</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">${perfPropre >= 100 ? '✓ Capital propre récupéré' : '⏳ Seuil non encore atteint'}</div>
+    </div>
   `;
+
+  const caisse = db.caisse || 0;
+  document.getElementById('caisse-input').value = caisse || '';
+  document.getElementById('caisse-display').textContent = fmt(caisse);
 }
 
 // ─── PRODUCTS ───────────────────────────────────────────────────────────────
@@ -1079,6 +1169,10 @@ function openProductModal(id) {
     document.getElementById('pm-init-qty').value = p.initQty || '';
     document.getElementById('pm-init-total').value = p.initTotal || '';
     document.getElementById('pm-init-enc').value = p.initEnc || '';
+    // Pre-fill reinvesti with lot0 reinvesti value, default to full lot value
+    const lot0 = p.lots && p.lots[0];
+    const lot0Val = lot0 ? (parseFloat(lot0.purchasePrice)||0) * (parseInt(lot0.qty)||0) : (parseFloat(p.purchasePrice)||0) * (parseInt(p.initialStock)||0);
+    document.getElementById('pm-reinvesti').value = lot0 && lot0.reinvesti !== undefined ? lot0.reinvesti : lot0Val;
   } else {
     title.textContent = 'Ajouter un produit';
     document.getElementById('pm-name').value = '';
@@ -1086,6 +1180,7 @@ function openProductModal(id) {
     document.getElementById('pm-buy').value = '';
     document.getElementById('pm-sell').value = '';
     document.getElementById('pm-stock').value = '';
+    document.getElementById('pm-reinvesti').value = '';
     document.getElementById('pm-init-qty').value = '';
     document.getElementById('pm-init-total').value = '';
     document.getElementById('pm-init-enc').value = '';
@@ -1098,6 +1193,15 @@ function closeProductModal() {
   editingProductId = null;
 }
 
+function updatePmReinvestiHint() {
+  const buy = parseFloat(document.getElementById('pm-buy').value) || 0;
+  const stock = parseInt(document.getElementById('pm-stock').value) || 0;
+  const reinvesti = parseFloat(document.getElementById('pm-reinvesti').value) || 0;
+  const total = buy * stock;
+  const propre = Math.max(0, total - reinvesti);
+  document.getElementById('pm-reinvesti-hint').textContent = total > 0 ? `Capital propre : ${fmt(propre)} — Réinvesti : ${fmt(Math.min(reinvesti, total))}` : '';
+}
+
 function saveProduct() {
   const name = document.getElementById('pm-name').value.trim();
   const ref = document.getElementById('pm-ref').value.trim();
@@ -1107,6 +1211,10 @@ function saveProduct() {
   const initQty = parseInt(document.getElementById('pm-init-qty').value) || 0;
   const initTotal = parseFloat(document.getElementById('pm-init-total').value) || 0;
   const initEnc = parseFloat(document.getElementById('pm-init-enc').value) || 0;
+  const reinvestiInput = parseFloat(document.getElementById('pm-reinvesti').value);
+  const lotVal = buy * stock;
+  // If field is empty on new product, default to full lot value (all reinvested)
+  const reinvesti = isNaN(reinvestiInput) ? lotVal : Math.min(reinvestiInput, lotVal);
   const err = document.getElementById('pm-error');
 
   if (!name && !ref) { err.textContent = 'Veuillez saisir au moins un nom ou une référence.'; err.style.display='block'; return; }
@@ -1122,16 +1230,16 @@ function saveProduct() {
     // Update first lot price and qty if it was the original
     if (!p.lots) p.lots = [];
     if (p.lots.length === 0) {
-      p.lots.push({ id: uid(), date: '', qty: stock, purchasePrice: buy });
+      p.lots.push({ id: uid(), date: '', qty: stock, purchasePrice: buy, reinvesti });
       p.initialStock = stock; p.purchasePrice = buy;
     } else {
-      // Update first lot only
       p.lots[0].qty = stock;
       p.lots[0].purchasePrice = buy;
+      p.lots[0].reinvesti = reinvesti;
       p.initialStock = stock; p.purchasePrice = buy;
     }
   } else {
-    const newP = { id: uid(), name, ref, purchasePrice: buy, salePrice: sell, initialStock: stock, initQty, initTotal, initEnc, lots: [{ id: uid(), date: '', qty: stock, purchasePrice: buy }] };
+    const newP = { id: uid(), name, ref, purchasePrice: buy, salePrice: sell, initialStock: stock, initQty, initTotal, initEnc, lots: [{ id: uid(), date: '', qty: stock, purchasePrice: buy, reinvesti }] };
     db.products.push(newP);
   }
 
@@ -1551,6 +1659,11 @@ function validatePayment() {
 }
 
 // ─── HISTORY ─────────────────────────────────────────────────────────────────
+function toggleGroup(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('collapsed');
+}
+
 function showHistoryTab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='sales')||(i===1&&tab==='payments')));
   document.getElementById('history-sales').style.display = tab === 'sales' ? 'block' : 'none';
@@ -1569,7 +1682,6 @@ function renderHistorySales() {
     return;
   }
 
-  // Group by date
   const grouped = {};
   const sorted = [...db.sales].sort((a,b) => b.date.localeCompare(a.date));
   sorted.forEach(s => {
@@ -1580,7 +1692,12 @@ function renderHistorySales() {
   let html = '';
   Object.entries(grouped).sort((a,b) => b[0].localeCompare(a[0])).forEach(([date, sales]) => {
     const dayTotal = sales.reduce((a,s) => a + (s.totalAmount || (s.price * s.qty)), 0);
-    html += `<div style="margin-bottom:4px;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-top:16px;">${formatMarketDate(date)} — ${fmt(dayTotal)}</div>`;
+    const groupId = 'sale-group-' + date.replace(/-/g,'');
+    html += `<h2 class="history-group-title" onclick="toggleGroup('${groupId}')">
+      <span>${formatMarketDate(date)}</span>
+      <span>${fmt(dayTotal)} ▾</span>
+    </h2>
+    <div id="${groupId}" class="history-group-details">`;
     sales.forEach(s => {
       const p = db.products.find(x => x.id === s.productId);
       const label = p ? productLabel(p) : 'Produit supprimé';
@@ -1604,6 +1721,7 @@ function renderHistorySales() {
         </div>
       </div>`;
     });
+    html += `</div>`;
   });
 
   el.innerHTML = html;
@@ -1620,15 +1738,18 @@ function renderHistoryPayments() {
   el.innerHTML = sorted.map(pay => {
     const d = new Date(pay.date + 'T00:00:00');
     const dateLabel = d.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/, c => c.toUpperCase());
-    return `<div class="history-item">
-      <div class="history-header">
-        <div>
-          <div class="history-date">${dateLabel}</div>
-          ${pay.note ? `<div class="history-detail" style="margin-top:4px;">${pay.note}</div>` : ''}
-          <div style="font-size:11px;color:var(--text3);margin-top:4px;">${pay.salesCovered.length} vente(s) marquée(s) encaissée(s)</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div class="history-amount">${fmt(pay.amount)}</div>
+    const groupId = 'pay-group-' + pay.id;
+    return `<h2 class="history-group-title" onclick="toggleGroup('${groupId}')">
+      <span>${dateLabel}</span>
+      <span>${fmt(pay.amount)} ▾</span>
+    </h2>
+    <div id="${groupId}" class="history-group-details collapsed">
+      <div class="history-item">
+        <div class="history-header">
+          <div>
+            ${pay.note ? `<div class="history-detail">${pay.note}</div>` : ''}
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">${pay.salesCovered.length} vente(s) marquée(s) encaissée(s)</div>
+          </div>
           <button class="btn btn-danger" onclick="deletePayment('${pay.id}')">✕</button>
         </div>
       </div>
@@ -1674,6 +1795,7 @@ function openReapproModal() {
   document.getElementById('rm-qty').value = '';
   document.getElementById('rm-price').value = lastPrice;
   document.getElementById('rm-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('rm-reinvesti').value = '';
   document.getElementById('rm-error').style.display = 'none';
   document.getElementById('reappro-modal').classList.add('open');
 }
@@ -1694,8 +1816,10 @@ function saveReappro() {
 
   const p = db.products.find(x => x.id === detailProductId);
   if (!p.lots) p.lots = [];
-  p.lots.push({ id: uid(), date, qty, purchasePrice: price });
-  // Update purchasePrice reference to latest
+  const lotVal = qty * price;
+  const reinvestiInput = parseFloat(document.getElementById('rm-reinvesti').value);
+  const reinvesti = isNaN(reinvestiInput) ? lotVal : Math.min(reinvestiInput, lotVal);
+  p.lots.push({ id: uid(), date, qty, purchasePrice: price, reinvesti });
   p.purchasePrice = price;
 
   saveDB();
@@ -1730,7 +1854,6 @@ function renderSupplies() {
   }
   const sorted = [...db.supplies].sort((a,b) => b.date.localeCompare(a.date));
   el.innerHTML = sorted.map(s => {
-    // Compute total ventes for products in this supply using computeMetrics (includes initData)
     const totalVentesSupply = s.lots.reduce((a, l) => {
       const m = computeMetrics(l.productId);
       return a + m.totalVentes;
@@ -1738,43 +1861,43 @@ function renderSupplies() {
     const perf = s.total > 0 ? Math.round(totalVentesSupply / s.total * 100) : 0;
     const diff = totalVentesSupply - s.total;
     const d = new Date(s.date + 'T00:00:00');
-    const dateLabel = d.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/, c => c.toUpperCase());
-    return `<div class="history-item" style="margin-bottom:12px;">
-      <div class="history-header" style="margin-bottom:10px;">
-        <div>
-          <div style="font-weight:600;font-size:15px;">${s.label}</div>
-          <div class="history-date">${dateLabel}</div>
+    const dateLabel = d.toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+    const groupId = 'supply-group-' + s.id;
+    return `<h2 class="history-group-title" onclick="toggleGroup('${groupId}')">
+      <span>${s.label} — ${dateLabel}</span>
+      <span>${fmt(s.total)} · ${perf}% ▾</span>
+    </h2>
+    <div id="${groupId}" class="history-group-details collapsed">
+      <div class="history-item" style="margin-bottom:12px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Total investi</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(s.total)}</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Total ventes</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(totalVentesSupply)}</div>
+          </div>
+          <div style="background:${diff >= 0 ? 'var(--green-pale)' : 'var(--red-pale)'};border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Différence</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;color:${diff >= 0 ? 'var(--green)' : 'var(--red)'};">${diff >= 0 ? '+' : ''}${fmt(diff)}</div>
+          </div>
+          <div style="background:${perf >= 100 ? 'var(--green-pale)' : 'var(--gold-pale)'};border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Performance</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;color:${perf >= 100 ? 'var(--green)' : 'var(--gold)'};">${perf}%</div>
+          </div>
         </div>
-        <div style="font-family:'Playfair Display',serif;font-size:16px;color:var(--green);">${fmt(s.total)}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-        <div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center;">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Total investi</div>
-          <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(s.total)}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">
+          ${s.lots.map(l => {
+            const p = db.products.find(x => x.id === l.productId);
+            return `<span style="margin-right:10px;">📦 ${p ? productLabel(p) : '?'} (lot ${l.lotIndex+1}) × ${l.qty} à ${fmt(l.purchasePrice)}</span>`;
+          }).join('')}
+          ${s.expenses && s.expenses.length ? s.expenses.map(e => `<span style="margin-right:10px;">🧾 ${e.label} : ${fmt(e.amount)}</span>`).join('') : ''}
         </div>
-        <div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center;">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Total ventes</div>
-          <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(totalVentesSupply)}</div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline btn-sm" onclick="editSupply('${s.id}')">Modifier</button>
+          <button class="btn btn-danger" onclick="deleteSupply('${s.id}')">Supprimer</button>
         </div>
-        <div style="background:${diff >= 0 ? 'var(--green-pale)' : 'var(--red-pale)'};border-radius:8px;padding:10px;text-align:center;">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Différence</div>
-          <div style="font-family:'Playfair Display',serif;font-size:15px;color:${diff >= 0 ? 'var(--green)' : 'var(--red)'};">${diff >= 0 ? '+' : ''}${fmt(diff)}</div>
-        </div>
-        <div style="background:${perf >= 100 ? 'var(--green-pale)' : 'var(--gold-pale)'};border-radius:8px;padding:10px;text-align:center;">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Performance</div>
-          <div style="font-family:'Playfair Display',serif;font-size:15px;color:${perf >= 100 ? 'var(--green)' : 'var(--gold)'};">${perf}%</div>
-        </div>
-      </div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">
-        ${s.lots.map(l => {
-          const p = db.products.find(x => x.id === l.productId);
-          return `<span style="margin-right:10px;">📦 ${p ? productLabel(p) : '?'} (lot ${l.lotIndex+1}) × ${l.qty} à ${fmt(l.purchasePrice)}</span>`;
-        }).join('')}
-        ${s.expenses && s.expenses.length ? s.expenses.map(e => `<span style="margin-right:10px;">🧾 ${e.label} : ${fmt(e.amount)}</span>`).join('') : ''}
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button class="btn btn-outline btn-sm" onclick="editSupply('${s.id}')">Modifier</button>
-        <button class="btn btn-danger" onclick="deleteSupply('${s.id}')">Supprimer</button>
       </div>
     </div>`;
   }).join('');
@@ -2042,11 +2165,13 @@ function openExpenseModal(id) {
     document.getElementById('em-category').value = e.category;
     document.getElementById('em-desc').value = e.description || '';
     document.getElementById('em-amount').value = e.amount;
+    document.getElementById('em-reinvesti').value = e.reinvesti || 0;
     document.getElementById('em-date').value = e.date;
   } else {
     document.getElementById('em-category').value = 'Matériel';
     document.getElementById('em-desc').value = '';
     document.getElementById('em-amount').value = '';
+    document.getElementById('em-reinvesti').value = 0;
     document.getElementById('em-date').value = new Date().toISOString().split('T')[0];
   }
   document.getElementById('expense-modal').classList.add('open');
@@ -2061,6 +2186,7 @@ function saveExpense() {
   const category = document.getElementById('em-category').value;
   const description = document.getElementById('em-desc').value.trim();
   const amount = parseFloat(document.getElementById('em-amount').value);
+  const reinvesti = Math.min(parseFloat(document.getElementById('em-reinvesti').value) || 0, amount || 0);
   const date = document.getElementById('em-date').value;
   const err = document.getElementById('em-error');
 
@@ -2069,9 +2195,9 @@ function saveExpense() {
 
   if (editingExpenseId) {
     const e = db.expenses.find(x => x.id === editingExpenseId);
-    e.category = category; e.description = description; e.amount = amount; e.date = date;
+    e.category = category; e.description = description; e.amount = amount; e.reinvesti = reinvesti; e.date = date;
   } else {
-    db.expenses.push({ id: uid(), category, description, amount, date });
+    db.expenses.push({ id: uid(), category, description, amount, reinvesti, date });
   }
 
   saveDB();
@@ -2087,15 +2213,35 @@ function deleteExpense(id) {
   renderDashboard();
 }
 
+// ─── CAISSE ──────────────────────────────────────────────────────────────────
+function saveCaisse() {
+  db.caisse = parseFloat(document.getElementById('caisse-input').value) || 0;
+  document.getElementById('caisse-display').textContent = fmt(db.caisse);
+  saveDB();
+}
+
 // ─── EXPORT / IMPORT ─────────────────────────────────────────────────────────
 function exportData() {
+  const json = JSON.stringify(db, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'marche-compta-' + new Date().toISOString().split('T')[0] + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportDataText() {
   const json = JSON.stringify(db, null, 2);
   const modal = document.getElementById('export-modal');
   document.getElementById('export-text').value = json;
   modal.classList.add('open');
 }
 
-function importData(event) {
+function importFromFile(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -2103,13 +2249,14 @@ function importData(event) {
     try {
       const data = JSON.parse(e.target.result);
       if (!data.products || !data.sales || !data.payments) throw new Error('Format invalide');
-      if (!confirm('Importer ces données ? Vos données actuelles seront remplacées.')) return;
       db = data;
+      if (!db.expenses) db.expenses = [];
+      if (!db.supplies) db.supplies = [];
+      if (db.caisse === undefined) db.caisse = 0;
       saveDB();
       renderDashboard();
-      alert('Données importées avec succès !');
     } catch(err) {
-      alert('Erreur lors de l\'import : fichier invalide.');
+      alert('Erreur : fichier JSON invalide.');
     }
   };
   reader.readAsText(file);
