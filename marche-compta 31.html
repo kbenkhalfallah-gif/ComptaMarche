@@ -1,0 +1,3049 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comptabilité Marché</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --bg2: #ece7dc;
+  --card: #faf7f2;
+  --green: #2d5a3d;
+  --green-light: #3d7a52;
+  --green-pale: #e8f0ea;
+  --gold: #c8922a;
+  --gold-pale: #fdf3e3;
+  --red: #b84040;
+  --red-pale: #fceaea;
+  --text: #1a1a18;
+  --text2: #5a5a50;
+  --text3: #9a9a8a;
+  --border: #d8d0c0;
+  --radius: 12px;
+  --shadow: 0 2px 16px rgba(45,90,61,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+}
+
+/* NAV */
+.nav {
+  background: var(--green);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-title {
+  font-family: 'Playfair Display', serif;
+  color: #d4e8d8;
+  font-size: 16px;
+  white-space: nowrap;
+  padding: 16px 12px 16px 4px;
+  margin-right: 8px;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+.nav-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  padding: 18px 14px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  letter-spacing: 0.3px;
+}
+.nav-btn:hover { color: white; }
+.nav-btn.active { color: white; border-bottom-color: #a8d5b0; }
+
+/* LAYOUT */
+.page { display: none; padding: 24px 20px; max-width: 700px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--green);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* METRIC GRID */
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.metric {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.metric.green { background: var(--green-pale); border-color: #b0d4b8; }
+.metric.gold { background: var(--gold-pale); border-color: #e8d0a0; }
+.metric.red { background: var(--red-pale); border-color: #e0b8b8; }
+.metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: var(--text);
+  font-weight: 700;
+}
+.metric.green .metric-value { color: var(--green); }
+.metric.gold .metric-value { color: var(--gold); }
+.metric.red .metric-value { color: var(--red); }
+
+/* LAST MOD */
+.last-mod {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: right;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.18s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--green); color: white; }
+.btn-primary:hover { background: var(--green-light); }
+.btn-gold { background: var(--gold); color: white; }
+.btn-gold:hover { background: #b07a20; }
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--green);
+  color: var(--green);
+}
+.btn-outline:hover { background: var(--green-pale); }
+.btn-danger { background: var(--red); color: white; font-size: 12px; padding: 6px 12px; }
+.btn-danger:hover { background: #9a3030; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-ghost { background: none; border: none; cursor: pointer; color: var(--text2); padding: 4px; }
+.btn-ghost:hover { color: var(--red); }
+
+.action-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* FORMS */
+.form-group { margin-bottom: 16px; }
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  background: white;
+  color: var(--text);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--green);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-hint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* TOGGLE */
+.toggle-group {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: white;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  transition: all 0.18s;
+}
+.toggle-btn.active { background: var(--green); color: white; }
+
+/* CHECKBOX */
+.check-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.18s;
+}
+.check-group:hover { border-color: var(--green); background: var(--green-pale); }
+.check-group input[type="checkbox"] { width: auto; accent-color: var(--green); transform: scale(1.2); }
+
+/* PRODUCT LIST */
+.product-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: var(--shadow);
+}
+.product-item:hover { border-color: var(--green); background: var(--green-pale); transform: translateY(-1px); }
+.product-name { font-weight: 600; font-size: 15px; }
+.product-ref { font-size: 12px; color: var(--text3); font-family: monospace; }
+.product-meta { display: flex; gap: 16px; align-items: center; }
+.product-price { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--green); }
+.product-stock { font-size: 12px; color: var(--text2); background: var(--bg2); padding: 3px 8px; border-radius: 20px; }
+
+/* HISTORY ITEMS */
+.history-item {
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow);
+}
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+.history-date { font-size: 12px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.history-amount { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--green); }
+.history-detail { font-size: 13px; color: var(--text2); }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-green { background: var(--green-pale); color: var(--green); }
+.badge-gold { background: var(--gold-pale); color: var(--gold); }
+
+/* TABS */
+.tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 2px solid var(--border); }
+.tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.18s;
+}
+.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(30,40,30,0.5);
+  z-index: 200;
+  backdrop-filter: blur(3px);
+  padding: 20px;
+  overflow-y: auto;
+}
+.modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; padding-top: 40px; }
+.modal {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  position: relative;
+}
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--green);
+  margin-bottom: 20px;
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 8px;
+}
+.modal-close:hover { color: var(--red); }
+
+/* SALE ITEMS IN FORM */
+.sale-line {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sale-line-info { font-size: 13px; color: var(--text); }
+.sale-line-total { font-weight: 600; color: var(--green); }
+
+/* PRODUCT DETAIL */
+.detail-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.detail-metric {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.detail-metric-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+.detail-metric-value { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--text); }
+.detail-metric-value.green { color: var(--green); }
+.detail-metric-value.gold { color: var(--gold); }
+.detail-metric-value.red { color: var(--red); }
+
+/* PAYMENT CHECKBOXES */
+.payment-sale-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.payment-sale-check:hover { border-color: var(--green); }
+.payment-sale-check.selected { border-color: var(--green); background: var(--green-pale); }
+.payment-sale-check input { accent-color: var(--green); }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 40px 20px; color: var(--text3); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-text { font-size: 14px; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* ALERT */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.alert-info { background: var(--green-pale); color: var(--green); border: 1px solid #b0d4b8; }
+.alert-warn { background: var(--gold-pale); color: var(--gold); border: 1px solid #e8d0a0; }
+
+/* SECTION TITLE */
+h1.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--green);
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+h2.history-group-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border);
+}
+h2.history-group-title:hover { border-color: var(--green); }
+.history-group-details { margin-bottom: 8px; }
+.history-group-details.collapsed { display: none; }
+
+@media (max-width: 480px) {
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .detail-metrics { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-title">🛒 Marché</div>
+  <button class="nav-btn active" onclick="showPage('dashboard')">Tableau de bord</button>
+  <button class="nav-btn" onclick="showPage('products')">Produits</button>
+  <button class="nav-btn" onclick="showPage('sale')">Vente</button>
+  <button class="nav-btn" onclick="showPage('retour')">Retour</button>
+  <button class="nav-btn" onclick="showPage('payment')">Versement</button>
+  <button class="nav-btn" onclick="showPage('supplies')">Approvisionnements</button>
+  <button class="nav-btn" onclick="showPage('expenses')">Frais</button>
+  <button class="nav-btn" onclick="showPage('history')">Historique</button>
+  <button class="nav-btn" onclick="showPage('stats')">Statistiques</button>
+  <button class="nav-btn" onclick="showPage('conges')">Congés</button>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="last-mod" id="last-mod-text">Aucune modification encore</div>
+  <h1 class="section-title">Vue d'ensemble</h1>
+  <div class="metrics" id="dashboard-metrics"></div>
+  <div class="card" style="margin-bottom:16px;">
+    <h2 style="font-family:'Playfair Display',serif;font-size:16px;color:var(--green);margin-bottom:12px;">Solde en caisse</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:'Playfair Display',serif;font-size:24px;color:var(--green);" id="caisse-display">0,00 €</span>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('caisse-modal').classList.add('open')">Modifier</button>
+    </div>
+  </div>
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="showPage('sale')">＋ Enregistrer une vente</button>
+    <button class="btn btn-gold" onclick="showPage('payment')">💶 Enregistrer un versement</button>
+    <button class="btn btn-outline" onclick="showPage('products')">📦 Voir les produits</button>
+  </div>
+  <div class="action-row">
+    <button class="btn btn-outline btn-sm" onclick="exportData()">⬇ Exporter (fichier JSON)</button>
+    <button class="btn btn-outline btn-sm" onclick="exportDataText()">⬇ Exporter (texte)</button>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-file-input').click()">⬆ Importer (fichier)</button>
+    <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importFromFile(event)">
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-modal').classList.add('open')">⬆ Importer (texte)</button>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div id="page-products" class="page">
+  <h1 class="section-title">Produits</h1>
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="openProductModal(null)">＋ Ajouter un produit</button>
+  </div>
+  <div class="form-group" style="margin-bottom:12px;">
+    <label>Trier par</label>
+    <select id="products-filter" onchange="renderProducts()">
+      <option value="stock">Stock restant</option>
+      <option value="score">Score de priorité</option>
+      <option value="velocite">Vélocité de vente</option>
+      <option value="marge">Taux de marge</option>
+      <option value="benefice">Bénéfice provisoire</option>
+      <option value="performance">Performance</option>
+      <option value="ca">Chiffre d'affaires</option>
+    </select>
+  </div>
+  <div id="products-list"></div>
+</div>
+
+<!-- RETOUR EDIT MODAL -->
+<div class="modal-overlay" id="retour-edit-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeRetourEditModal()">✕</button>
+    <h1 class="modal-title">Modifier le retour</h1>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantité</label>
+        <input type="number" id="rem-qty" min="1">
+      </div>
+      <div class="form-group">
+        <label>Prix unitaire (€)</label>
+        <input type="number" id="rem-price" step="0.01" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Rattacher à un versement</label>
+      <select id="rem-versement"></select>
+      <div class="form-hint">Permet de corriger le rattachement d'un retour passé</div>
+    </div>
+    <div id="rem-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeRetourEditModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveRetourEdit()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div id="page-conges" class="page">
+  <h1 class="section-title">Congés et jours inactifs</h1>
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date de début</label>
+        <input type="date" id="conge-debut" oninput="renderConges()">
+      </div>
+      <div class="form-group">
+        <label>Date de fin</label>
+        <input type="date" id="conge-fin" oninput="renderConges()">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Motif (optionnel)</label>
+      <input type="text" id="conge-motif" placeholder="ex: Paris, Ramadan, Fête nationale">
+    </div>
+    <div id="conge-preview" style="font-size:13px;color:var(--text2);margin-bottom:12px;"></div>
+    <div id="conge-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
+    <button class="btn btn-primary" onclick="saveConge()">＋ Ajouter cette période</button>
+  </div>
+  <div id="conges-list" style="margin-top:16px;"></div>
+</div>
+
+<!-- SALE -->
+<div id="page-sale" class="page">
+  <h1 class="section-title">Enregistrer une vente</h1>
+  <div class="card">
+    <div class="form-group">
+      <label>Mode de vente</label>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="mode-btn-normal" onclick="setSaleMode('normal')">Vente normale</button>
+        <button class="toggle-btn" id="mode-btn-gros" onclick="setSaleMode('gros')">Vente en gros</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Jour de marché</label>
+      <select id="sale-date"></select>
+    </div>
+    <div class="form-group">
+      <label>Produit</label>
+      <select id="sale-product" onchange="onSaleProductChange()">
+        <option value="">— Sélectionner un produit —</option>
+      </select>
+    </div>
+    <div id="sale-product-info" style="display:none;" class="alert alert-info"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantité</label>
+        <input type="number" id="sale-qty" min="1" value="1" oninput="updateSaleTotal()">
+      </div>
+      <div class="form-group" id="sale-price-group">
+        <label>Prix unitaire (€)</label>
+        <input type="number" id="sale-price" step="0.01" oninput="updateSaleTotal()">
+        <div class="form-hint">Prix de vente réel par défaut</div>
+      </div>
+      <div class="form-group" id="sale-total-group" style="display:none;">
+        <label>Montant total encaissé (€)</label>
+        <input type="number" id="sale-total-gros" step="0.01" oninput="updateSaleTotal()">
+        <div class="form-hint">Montant global pour toute la quantité</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Statut d'encaissement</label>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="enc-btn-yes" onclick="setEncaisse(true)">✓ Encaissée</button>
+        <button class="toggle-btn" id="enc-btn-no" onclick="setEncaisse(false)">⏳ En attente</button>
+      </div>
+    </div>
+    <div id="sale-total-display" style="font-family:'Playfair Display',serif;font-size:18px;color:var(--green);text-align:right;margin-bottom:16px;"></div>
+    <button class="btn btn-outline" onclick="addSaleLine()">＋ Ajouter cette ligne</button>
+  </div>
+
+  <div id="sale-lines-container" style="display:none;">
+    <div class="card">
+      <div class="card-title">Lignes de vente</div>
+      <div id="sale-lines-list"></div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-weight:600;">
+        <span>Total</span>
+        <span id="sale-grand-total" style="font-family:'Playfair Display',serif;font-size:20px;color:var(--green);"></span>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="validateSale()">✓ Valider la vente</button>
+  </div>
+  <div id="sale-recap" style="display:none;" class="card">
+    <div class="card-title">Vente enregistrée ✓</div>
+    <div id="sale-recap-content" style="font-size:13px;color:var(--text2);margin-bottom:16px;white-space:pre-line;"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-outline" onclick="copyRecap('detail')" id="btn-copy-detail">📋 Copier le détail</button>
+      <button class="btn btn-outline" onclick="copyRecap('jour')" id="btn-copy-jour">📋 Copier le total du jour</button>
+      <button class="btn btn-outline" onclick="copyRecap('reste')" id="btn-copy-reste">📋 Copier le reste à encaisser</button>
+      <button class="btn btn-primary" style="margin-top:4px;" onclick="showPage('dashboard')">Retour au tableau de bord</button>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+  <h1 class="section-title">Retour article</h1>
+  <div class="card">
+    <div class="form-group">
+      <label>Jour de marché</label>
+      <select id="retour-date"></select>
+    </div>
+    <div class="form-group">
+      <label>Produit retourné</label>
+      <select id="retour-product" onchange="onRetourProductChange()">
+        <option value="">— Sélectionner un produit —</option>
+      </select>
+    </div>
+    <div id="retour-product-info" style="display:none;" class="alert alert-info"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantité retournée</label>
+        <input type="number" id="retour-qty" min="1" value="1" oninput="updateRetourTotal()">
+      </div>
+      <div class="form-group">
+        <label>Prix unitaire (€)</label>
+        <input type="number" id="retour-price" step="0.01" oninput="updateRetourTotal()">
+      </div>
+    </div>
+    <div id="retour-total-display" style="font-family:'Playfair Display',serif;font-size:18px;color:var(--red);text-align:right;margin-bottom:16px;"></div>
+    <div id="retour-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
+    <button class="btn btn-danger" style="width:100%;" onclick="validateRetour()">↩ Enregistrer le retour</button>
+  </div>
+</div>
+
+<!-- PAYMENT -->
+<div id="page-payment" class="page">
+  <h1 class="section-title">Enregistrer un versement</h1>
+  <div class="card">
+    <div id="reste-info" class="alert alert-info" style="margin-bottom:16px;"></div>
+    <div class="form-group">
+      <label>Montant versé (€)</label>
+      <input type="number" id="pay-amount" step="0.01" oninput="onPayAmountChange()">
+    </div>
+    <div class="form-group">
+      <label>Date du versement</label>
+      <input type="date" id="pay-date">
+    </div>
+    <div class="form-group">
+      <label>Note (optionnelle)</label>
+      <input type="text" id="pay-note" placeholder="ex: virement, espèces…">
+    </div>
+    <div id="pay-match-info" class="alert" style="display:none;"></div>
+    <div id="pay-retours-section" style="display:none;"></div>
+    <div id="pay-checks" style="display:none;">
+      <div class="divider"></div>
+      <label>Sélectionner les ventes couvertes par ce versement</label>
+      <div id="pay-check-list" style="margin-top:12px;"></div>
+      <div style="margin-top:10px;font-size:13px;color:var(--text2);">
+        Montant sélectionné : <strong id="pay-selected-total">0,00 €</strong>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <button class="btn btn-gold" style="width:100%;" onclick="validatePayment()">✓ Enregistrer le versement</button>
+  </div>
+</div>
+
+<!-- SUPPLIES -->
+<div id="page-supplies" class="page">
+  <h1 class="section-title">Approvisionnements</h1>
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="openSupplyModal(null)">＋ Nouvel approvisionnement</button>
+  </div>
+  <div id="supplies-list"></div>
+</div>
+
+<!-- EXPENSES -->
+<div id="page-expenses" class="page">
+  <h1 class="section-title">Frais généraux</h1>
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="openExpenseModal(null)">＋ Ajouter un frais</button>
+  </div>
+  <div id="expenses-summary" class="metrics" style="margin-bottom:16px;"></div>
+  <div id="expenses-list"></div>
+</div>
+
+<!-- HISTORY -->
+<div id="page-history" class="page">
+  <h1 class="section-title">Historique</h1>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showHistoryTab('sales')">Ventes</button>
+    <button class="tab-btn" onclick="showHistoryTab('payments')">Versements</button>
+  </div>
+  <div id="history-sales"></div>
+  <div id="history-payments" style="display:none;"></div>
+</div>
+
+<!-- STATS -->
+<div id="page-stats" class="page">
+  <h1 class="section-title">Statistiques</h1>
+  <div class="form-group" style="margin-bottom:16px;">
+    <label>Année</label>
+    <select id="stats-year" onchange="renderStats()"></select>
+  </div>
+  <div id="stats-content"></div>
+</div>
+
+<!-- MODAL IMPORT -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('import-modal').classList.remove('open')">✕</button>
+    <h1 class="modal-title">Importer des données</h1>
+    <div class="alert alert-warn" style="margin-bottom:16px;">Colle ici le texte JSON copié depuis l'export. Tes données actuelles seront remplacées.</div>
+    <textarea id="import-text" rows="10" style="font-family:monospace;font-size:11px;resize:none;" placeholder="Colle ton JSON ici..."></textarea>
+    <div id="import-error" style="color:var(--red);font-size:13px;margin-top:10px;display:none;"></div>
+    <div id="import-success" style="color:var(--green);font-size:13px;margin-top:10px;display:none;font-weight:600;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
+      <button class="btn btn-outline" onclick="document.getElementById('import-modal').classList.remove('open')">Annuler</button>
+      <button class="btn btn-gold" onclick="importFromText()">Importer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SUPPLY -->
+<div class="modal-overlay" id="supply-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSupplyModal()">✕</button>
+    <h1 class="modal-title" id="supply-modal-title">Nouvel approvisionnement</h1>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Intitulé</label>
+        <input type="text" id="sm-label" placeholder="ex: Paris, Internet, Algérie">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="sm-date">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--green);margin-bottom:12px;">Lots de produits rattachés</div>
+    <div id="sm-lots-list" style="margin-bottom:12px;"></div>
+    <div style="background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:12px;">
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Produit</label>
+          <select id="sm-lot-product" onchange="onSupplyLotProductChange()">
+            <option value="">— Sélectionner —</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Lot</label>
+          <select id="sm-lot-select">
+            <option value="">— Choisir un lot —</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="addSupplyLot()">＋ Ajouter ce lot</button>
+    </div>
+
+    <div class="divider"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--green);margin-bottom:12px;">Frais généraux rattachés</div>
+    <div id="sm-expenses-list" style="margin-bottom:12px;"></div>
+    <div style="background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:12px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Frais à rattacher</label>
+        <select id="sm-expense-select">
+          <option value="">— Sélectionner un frais —</option>
+        </select>
+      </div>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="addSupplyExpense()">＋ Ajouter ce frais</button>
+    </div>
+
+    <div class="divider"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-weight:600;">Total approvisionnement</span>
+      <span id="sm-total" style="font-family:'Playfair Display',serif;font-size:20px;color:var(--green);">0,00 €</span>
+    </div>
+
+    <div id="sm-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeSupplyModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveSupply()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EXPENSE -->
+<div class="modal-overlay" id="expense-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeExpenseModal()">✕</button>
+    <h1 class="modal-title" id="expense-modal-title">Ajouter un frais</h1>
+    <div class="form-group">
+      <label>Catégorie</label>
+      <select id="em-category">
+        <option value="Matériel">Matériel</option>
+        <option value="Transport">Transport</option>
+        <option value="Autre">Autre</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="em-desc" placeholder="ex: 2 mannequins d'exposition">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Montant (€)</label>
+        <input type="number" id="em-amount" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Dont réinvesti du CA (€)</label>
+        <input type="number" id="em-reinvesti" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="em-date">
+    </div>
+    <div id="em-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeExpenseModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveExpense()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REAPPRO -->
+<div class="modal-overlay" id="reappro-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeReapproModal()">✕</button>
+    <h1 class="modal-title">Réapprovisionner</h1>
+    <div id="reappro-product-name" style="font-size:13px;color:var(--text2);margin-bottom:16px;"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantité ajoutée</label>
+        <input type="number" id="rm-qty" min="1" placeholder="0" oninput="autoFillRmReinvesti()">
+      </div>
+      <div class="form-group">
+        <label>Prix d'achat unitaire (€)</label>
+        <input type="number" id="rm-price" step="0.01" min="0" placeholder="0.00" oninput="autoFillRmReinvesti()">
+        <div class="form-hint">Pré-rempli avec l'ancien prix</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Date du réapprovisionnement</label>
+      <input type="date" id="rm-date">
+    </div>
+    <div class="form-group">
+      <label>Dont réinvesti du CA (€)</label>
+      <input type="number" id="rm-reinvesti" step="0.01" min="0" placeholder="0.00" oninput="updateRmReinvestiHint()">
+      <div class="form-hint" id="rm-reinvesti-hint"></div>
+    </div>
+    <div id="rm-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeReapproModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveReappro()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAISSE -->
+<div class="modal-overlay" id="caisse-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('caisse-modal').classList.remove('open')">✕</button>
+    <h1 class="modal-title">Solde en caisse</h1>
+    <div class="form-group">
+      <label>Montant présent en caisse (€)</label>
+      <input type="number" id="caisse-input" step="0.01" min="0" placeholder="0.00">
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('caisse-modal').classList.remove('open')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveCaisse()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EXPORT -->
+<div class="modal-overlay" id="export-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('export-modal').classList.remove('open')">✕</button>
+    <h1 class="modal-title">Exporter mes données</h1>
+    <div class="alert alert-info" style="margin-bottom:16px;">Sélectionne tout le texte ci-dessous, copie-le et colle-le dans une note ou un mail pour le sauvegarder.</div>
+    <textarea id="export-text" rows="10" style="font-family:monospace;font-size:11px;resize:none;" readonly></textarea>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
+      <button class="btn btn-primary" onclick="selectExportText()">Tout sélectionner</button>
+      <button class="btn btn-outline" onclick="document.getElementById('export-modal').classList.remove('open')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUCT -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeProductModal()">✕</button>
+    <h1 class="modal-title" id="product-modal-title">Ajouter un produit</h1>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" id="pm-name" placeholder="ex: Chaussettes noires">
+        <div class="form-hint">Optionnel (mais nom ou réf. requis)</div>
+      </div>
+      <div class="form-group">
+        <label>Référence</label>
+        <input type="text" id="pm-ref" placeholder="ex: REF-042">
+        <div class="form-hint">Optionnel</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prix d'achat unitaire (€)</label>
+        <input type="number" id="pm-buy" step="0.01" min="0" placeholder="0.00" oninput="autoFillPmReinvesti()">
+      </div>
+      <div class="form-group">
+        <label>Prix de vente réel (€)</label>
+        <input type="number" id="pm-sell" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Stock initial (quantité)</label>
+      <input type="number" id="pm-stock" min="0" placeholder="0" oninput="autoFillPmReinvesti()">
+    </div>
+    <div class="form-group">
+      <label>Dont réinvesti du CA (€)</label>
+      <input type="number" id="pm-reinvesti" step="0.01" min="0" placeholder="0.00" oninput="updatePmReinvestiHint()">
+      <div class="form-hint" id="pm-reinvesti-hint">Par défaut : totalité considérée comme réinvestie. Ajustez à la baisse si une partie vient de votre poche.</div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--green);margin-bottom:12px;">Données existantes <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text3);font-style:italic;">(optionnel — pour intégrer l'historique avant l'application)</span></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantité déjà vendue</label>
+        <input type="number" id="pm-init-qty" min="0" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Montant total de ces ventes (€)</label>
+        <input type="number" id="pm-init-total" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Montant déjà encaissé parmi ces ventes (€)</label>
+      <input type="number" id="pm-init-enc" step="0.01" min="0" placeholder="0.00">
+      <div class="form-hint">Le reste (montant total − encaissé) sera ajouté au "Reste à encaisser"</div>
+    </div>
+    <div id="pm-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeProductModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+let db = { products: [], sales: [], payments: [], lastMod: null };
+let editingProductId = null;
+let detailProductId = null;
+let saleLines = [];
+let saleEncaisse = true;
+let saleMode = 'normal';
+
+function setSaleMode(mode) {
+  saleMode = mode;
+  document.getElementById('mode-btn-normal').classList.toggle('active', mode === 'normal');
+  document.getElementById('mode-btn-gros').classList.toggle('active', mode === 'gros');
+  document.getElementById('sale-price-group').style.display = mode === 'normal' ? 'block' : 'none';
+  document.getElementById('sale-total-group').style.display = mode === 'gros' ? 'block' : 'none';
+  document.getElementById('sale-price').value = '';
+  document.getElementById('sale-total-gros').value = '';
+  onSaleProductChange();
+  updateSaleTotal();
+}
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem('marche-compta');
+    if (raw) db = JSON.parse(raw);
+  } catch(e) {}
+  if (!db.expenses) db.expenses = [];
+  if (!db.supplies) db.supplies = [];
+  if (!db.retours) db.retours = [];
+  if (!db.conges) db.conges = [];
+  if (db.caisse === undefined) db.caisse = 0;
+  db.products.forEach(p => {
+    if (!p.lots) {
+      p.lots = [];
+      if ((parseFloat(p.purchasePrice) || 0) > 0 || (parseInt(p.initialStock) || 0) > 0) {
+        p.lots.push({ id: uid(), date: '', qty: parseInt(p.initialStock) || 0, purchasePrice: parseFloat(p.purchasePrice) || 0 });
+      }
+    }
+  });
+}
+
+function saveDB() {
+  db.lastMod = new Date().toISOString();
+  localStorage.setItem('marche-compta', JSON.stringify(db));
+  updateLastMod();
+}
+
+function updateLastMod() {
+  const el = document.getElementById('last-mod-text');
+  if (!db.lastMod) { el.textContent = 'Aucune modification encore'; return; }
+  const d = new Date(db.lastMod);
+  el.textContent = 'Dernière modification : ' + d.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' à ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ─── UTILS ──────────────────────────────────────────────────────────────────
+function fmt(n) {
+  const val = Number(n);
+  if (val < 0) {
+    return 'moins ' + Math.abs(val).toLocaleString('fr-FR', {minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+  }
+  return val.toLocaleString('fr-FR', {minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+}
+
+function productLabel(p) {
+  if (p.name && p.ref) return p.name + ' (' + p.ref + ')';
+  return p.name || p.ref || 'Sans nom';
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+// ─── MARKET DAYS ────────────────────────────────────────────────────────────
+function getMarketDays(count = 60) {
+  const days = [];
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  let found = 0;
+  while (found < count) {
+    const dow = d.getDay();
+    if (dow === 2 || dow === 4 || dow === 6) {
+      days.push(new Date(d));
+      found++;
+    }
+    d.setDate(d.getDate() - 1);
+  }
+  return days;
+}
+
+function dateStr(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function formatMarketDate(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/, c => c.toUpperCase());
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  const idx = ['dashboard','products','sale','retour','payment','supplies','expenses','history','stats','conges'];
+  btns[idx.indexOf(id)]?.classList.add('active');
+
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'products') renderProducts();
+  if (id === 'sale') initSaleForm();
+  if (id === 'retour') initRetourForm();
+  if (id === 'payment') initPaymentForm();
+  if (id === 'supplies') renderSupplies();
+  if (id === 'expenses') renderExpenses();
+  if (id === 'history') renderHistory();
+  if (id === 'stats') initStats();
+  if (id === 'conges') renderConges();
+}
+
+// ─── DASHBOARD ──────────────────────────────────────────────────────────────
+function computeMetrics(productId = null) {
+  const sales = productId ? db.sales.filter(s => s.productId === productId) : db.sales;
+  const products = productId ? db.products.filter(p => p.id === productId) : db.products;
+
+  let totalInvesti = 0;
+  let capitalPropre = 0;
+  let capitalReinvesti = 0;
+  let initTotal = 0;
+  let initEnc = 0;
+  products.forEach(p => {
+    (p.lots || []).forEach(lot => {
+      const val = (parseFloat(lot.purchasePrice) || 0) * (parseInt(lot.qty) || 0);
+      totalInvesti += val;
+      const reinvestiAmt = parseFloat(lot.reinvesti) || 0;
+      capitalReinvesti += Math.min(reinvestiAmt, val);
+      capitalPropre += val - Math.min(reinvestiAmt, val);
+    });
+    if (!p.lots || p.lots.length === 0) {
+      const val = (parseFloat(p.purchasePrice) || 0) * (parseInt(p.initialStock) || 0);
+      totalInvesti += val;
+      capitalPropre += val;
+    }
+    initTotal += parseFloat(p.initTotal) || 0;
+    initEnc += parseFloat(p.initEnc) || 0;
+  });
+
+  let totalVentes = initTotal;
+  let totalEncaisse = initEnc;
+  sales.forEach(s => {
+    const amt = s.totalAmount || ((parseFloat(s.price) || 0) * (parseInt(s.qty) || 0));
+    totalVentes += amt;
+    if (s.encaissee) totalEncaisse += amt;
+  });
+
+  const retours = productId ? (db.retours||[]).filter(r => r.productId === productId) : (db.retours||[]);
+  retours.forEach(r => {
+    const amt = (parseFloat(r.price)||0) * (parseInt(r.qty)||0);
+    totalVentes -= amt;
+    if (r.versementId) totalEncaisse -= amt;
+  });
+
+  let totalFrais = 0;
+  let fraisReinvesti = 0;
+  if (!productId) {
+    (db.expenses || []).forEach(e => {
+      const amt = parseFloat(e.amount) || 0;
+      const rein = Math.min(parseFloat(e.reinvesti) || 0, amt);
+      totalFrais += amt;
+      fraisReinvesti += rein;
+    });
+  }
+  const fraisPropre = totalFrais - fraisReinvesti;
+
+  return {
+    totalInvesti,
+    capitalPropre,
+    capitalReinvesti,
+    totalVentes,
+    totalEncaisse,
+    resteEncaisser: totalVentes - totalEncaisse,
+    beneficeReel: totalVentes - totalInvesti - totalFrais,
+    beneficePropre: totalVentes - capitalPropre - fraisPropre,
+    totalFrais,
+    fraisReinvesti,
+    fraisPropre,
+  };
+}
+
+function renderDashboard() {
+  updateLastMod();
+  const m = computeMetrics();
+  const totalInvestiGlobal = m.totalInvesti + m.totalFrais;
+  const perf = totalInvestiGlobal > 0 ? Math.round(m.totalVentes / totalInvestiGlobal * 100) : 0;
+  const basePropreGlobal = m.capitalPropre + m.fraisPropre;
+  const perfPropre = basePropreGlobal > 0 ? Math.round(m.totalVentes / basePropreGlobal * 100) : 0;
+  const totalPropre = m.capitalPropre + m.fraisPropre;
+  const totalReinvesti = m.capitalReinvesti + m.fraisReinvesti;
+  const pctPropre = totalInvestiGlobal > 0 ? Math.round(totalPropre / totalInvestiGlobal * 100) : 0;
+  const pctReinvesti = totalInvestiGlobal > 0 ? Math.round(totalReinvesti / totalInvestiGlobal * 100) : 0;
+  const el = document.getElementById('dashboard-metrics');
+  el.innerHTML = `
+    <div class="metric">
+      <div class="metric-label">Capital propre investi</div>
+      <div class="metric-value" style="font-size:18px;">${fmt(totalPropre)}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">Achats ${fmt(m.capitalPropre)} + Frais ${fmt(m.fraisPropre)}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Réinvesti du CA</div>
+      <div class="metric-value" style="font-size:18px;">${fmt(totalReinvesti)}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">Achats ${fmt(m.capitalReinvesti)} + Frais ${fmt(m.fraisReinvesti)}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Total des achats de marchandises</div>
+      <div class="metric-value" style="font-size:18px;">${fmt(m.totalInvesti)}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Total des frais généraux</div>
+      <div class="metric-value" style="font-size:18px;">${fmt(m.totalFrais)}</div>
+    </div>
+    <div class="metric" style="grid-column:1/-1;background:var(--bg2);border:1.5px solid var(--border);">
+      <div class="metric-label">Total investi (marchandises + frais)</div>
+      <div class="metric-value">${fmt(totalInvestiGlobal)}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:6px;">Capital propre ${pctPropre}% — Réinvesti du CA ${pctReinvesti}%</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Total des ventes</div>
+      <div class="metric-value" style="font-size:18px;">${fmt(m.totalVentes)}</div>
+    </div>
+    <div class="metric gold">
+      <div class="metric-label">Total encaissé</div>
+      <div class="metric-value gold" style="font-size:18px;">${fmt(m.totalEncaisse)}</div>
+    </div>
+    <div class="metric red">
+      <div class="metric-label">Reste à encaisser</div>
+      <div class="metric-value red" style="font-size:18px;">${fmt(m.resteEncaisser)}</div>
+    </div>
+    <div class="metric" style="grid-column:1/-1;background:var(--gold-pale);border:1.5px solid #e8d0a0;">
+      <div class="metric-label">Capital disponible (caisse + reste à encaisser)</div>
+      <div class="metric-value" style="color:var(--gold);font-size:22px;">${fmt((db.caisse || 0) + m.resteEncaisser)}</div>
+    </div>
+    <div class="metric green" style="grid-column:1/-1;">
+      <div class="metric-label">Bénéfice réel (ventes − total investi)</div>
+      <div class="metric-value green">${fmt(m.beneficeReel)}</div>
+    </div>
+    <div class="metric" style="grid-column:1/-1;background:var(--green-pale);border:1.5px solid #b0d4b8;">
+      <div class="metric-label">Bénéfice propre (ventes − capital propre − frais propres)</div>
+      <div class="metric-value" style="color:var(--green);font-size:22px;">${fmt(m.beneficePropre)}</div>
+    </div>
+    <div class="metric" style="grid-column:1/-1;background:var(--bg2);border:1.5px solid var(--border);text-align:center;">
+      <div class="metric-label">Indicateur de performance global</div>
+      <div class="metric-value" style="color:${perf >= 100 ? 'var(--green)' : 'var(--gold)'};font-size:28px;">${perf}%</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">${perf >= 100 ? '✓ Mise de fonds récupérée' : '⏳ Seuil non encore atteint'}</div>
+    </div>
+    <div class="metric" style="grid-column:1/-1;background:var(--bg2);border:1.5px solid var(--border);text-align:center;">
+      <div class="metric-label">Indicateur de performance propre</div>
+      <div class="metric-value" style="color:${perfPropre >= 100 ? 'var(--green)' : 'var(--gold)'};font-size:28px;">${perfPropre}%</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">${perfPropre >= 100 ? '✓ Capital propre récupéré' : '⏳ Seuil non encore atteint'}</div>
+    </div>
+  `;
+
+  const caisse = db.caisse || 0;
+  document.getElementById('caisse-input').value = caisse || '';
+  document.getElementById('caisse-display').textContent = fmt(caisse);
+}
+
+// ─── PRODUCTS ───────────────────────────────────────────────────────────────
+function getProductSortValue(p, filter) {
+  const id = p.id;
+  const m = computeMetrics(id);
+  const stock = getStock(id);
+  const soldQty = db.sales.filter(s => s.productId === id).reduce((a,s) => a + (parseInt(s.qty)||0), 0);
+  const returnedQty = (db.retours||[]).filter(r => r.productId === id).reduce((a,r) => a + (parseInt(r.qty)||0), 0);
+  const netSoldQty = soldQty - returnedQty;
+  const totalQty = netSoldQty + (parseInt(p.initQty)||0);
+  const fifoSoldCost = computeFIFOCost(p, totalQty);
+
+  if (filter === 'score' || filter === 'stock') {
+    function getLotDateScore(prod, lotIdx) {
+      const lot = prod.lots && prod.lots[lotIdx];
+      if (lot && lot.date) return lot.date;
+      for (const sup of (db.supplies||[])) {
+        const match = sup.lots.find(sl => sl.productId === prod.id && sl.lotIndex === lotIdx);
+        if (match) return sup.date;
+      }
+      return null;
+    }
+    let firstDate = null;
+    for (let i = 0; i < (p.lots||[]).length; i++) { const d = getLotDateScore(p, i); if (d) { firstDate = d; break; } }
+    let vel = 0;
+    if (firstDate && netSoldQty > 0) {
+      let endDate = new Date(); endDate.setHours(0,0,0,0);
+      if (stock === 0) {
+        const salesSorted = db.sales.filter(s => s.productId === p.id).sort((a,b) => a.date.localeCompare(b.date));
+        const totalLotQty = (p.lots||[]).reduce((a,l) => a + (parseInt(l.qty)||0), 0);
+        let cumQty = parseInt(p.initQty)||0;
+        for (const s of salesSorted) { cumQty += parseInt(s.qty)||0; if (cumQty >= totalLotQty) { endDate = new Date(s.date+'T00:00:00'); break; } }
+      }
+      const md = countMarketDaysExcluding(firstDate, endDate.toISOString().split('T')[0]);
+      if (md > 0) vel = netSoldQty / md;
+    }
+    if (filter === 'stock') return { val: stock, label: `Stock : ${stock}` };
+    const margeUnitaire = totalQty > 0 ? (m.totalVentes - m.totalInvesti) / totalQty : 0;
+    const performance = m.totalInvesti > 0 ? m.totalVentes / m.totalInvesti : 0;
+    const score = Math.round(vel * Math.max(0, margeUnitaire) * performance * 10) / 10;
+    return { val: score, label: `Score : ${score} (${netSoldQty} ventes)` };
+  }
+  if (filter === 'benefice') return { val: m.totalVentes - fifoSoldCost, label: fmt(m.totalVentes - fifoSoldCost) };
+  if (filter === 'performance') {
+    const perf = m.totalInvesti > 0 ? Math.round(m.totalVentes / m.totalInvesti * 100) : 0;
+    return { val: perf, label: `${perf}%` };
+  }
+  if (filter === 'marge') {
+    const prixVenteMoyen = totalQty > 0 ? m.totalVentes / totalQty : 0;
+    const taux = prixVenteMoyen > 0 ? Math.round((prixVenteMoyen - (m.totalInvesti / Math.max(1, (parseInt(p.initialStock)||0) + (p.lots||[]).slice(1).reduce((a,l)=>a+(parseInt(l.qty)||0),0)))) / prixVenteMoyen * 100) : 0;
+    return { val: taux, label: `Taux de marge : ${taux}%` };
+  }
+  if (filter === 'velocite') {
+    function getLotDate(prod, lotIdx) {
+      const lot = prod.lots && prod.lots[lotIdx];
+      if (lot && lot.date) return lot.date;
+      for (const sup of (db.supplies||[])) {
+        const match = sup.lots.find(sl => sl.productId === prod.id && sl.lotIndex === lotIdx);
+        if (match) return sup.date;
+      }
+      return null;
+    }
+    let firstDate = null;
+    for (let i = 0; i < (p.lots||[]).length; i++) { const d = getLotDate(p, i); if (d) { firstDate = d; break; } }
+    if (!firstDate || netSoldQty <= 0) return { val: -1, label: 'Données insuffisantes' };
+    let endDate = new Date(); endDate.setHours(0,0,0,0);
+    if (stock === 0) {
+      const salesSorted = db.sales.filter(s => s.productId === id).sort((a,b) => a.date.localeCompare(b.date));
+      const totalLotQty = (p.lots||[]).reduce((a,l) => a + (parseInt(l.qty)||0), 0);
+      let cumQty = parseInt(p.initQty)||0;
+      for (const s of salesSorted) { cumQty += parseInt(s.qty)||0; if (cumQty >= totalLotQty) { endDate = new Date(s.date+'T00:00:00'); break; } }
+    }
+    const md = countMarketDaysExcluding(firstDate, endDate.toISOString().split('T')[0]);
+    const v = md > 0 ? netSoldQty / md : 0;
+    return { val: v, label: `${v.toFixed(2)} unité(s) / jour` };
+  }
+  if (filter === 'ca') {
+    return { val: m.totalVentes, label: fmt(m.totalVentes) };
+  }
+  return { val: 0, label: '' };
+}
+
+function renderProducts() {
+  const el = document.getElementById('products-list');
+  if (db.products.length === 0) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">Aucun produit enregistré.<br>Commencez par en ajouter un !</div></div>`;
+    return;
+  }
+  const filter = document.getElementById('products-filter') ? document.getElementById('products-filter').value : 'stock';
+  const sorted = [...db.products].sort((a,b) => getProductSortValue(b, filter).val - getProductSortValue(a, filter).val);
+  el.innerHTML = sorted.map(p => {
+    const sv = getProductSortValue(p, filter);
+    const groupId = 'prod-group-' + p.id;
+    return `
+    <h2 class="history-group-title" onclick="toggleGroup('${groupId}')">
+      <span>${productLabel(p)}</span>
+      <span>${sv.label} ▾</span>
+    </h2>
+    <div id="${groupId}" class="history-group-details collapsed">
+      <div class="history-item" style="margin-bottom:4px;">
+        ${buildProductDetail(p.id)}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+          <button class="btn btn-outline btn-sm" onclick="openProductModal('${p.id}');renderProducts()">Modifier</button>
+          <button class="btn btn-gold btn-sm" onclick="detailProductId='${p.id}';openReapproModal()">＋ Réapprovisionner</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProductInline('${p.id}')">Supprimer</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteProductInline(id) {
+  if (!confirm('Supprimer ce produit ?')) return;
+  db.products = db.products.filter(p => p.id !== id);
+  saveDB();
+  renderProducts();
+  renderDashboard();
+}
+
+function buildProductDetail(id) {
+  const p = db.products.find(x => x.id === id);
+  if (!p) return '';
+  const m = computeMetrics(id);
+  const stock = getStock(id);
+  const soldQty = db.sales.filter(s => s.productId === id).reduce((a,s) => a + (parseInt(s.qty)||0), 0);
+  const returnedQty = (db.retours||[]).filter(r => r.productId === id).reduce((a,r) => a + (parseInt(r.qty)||0), 0);
+  const netSoldQty = soldQty - returnedQty;
+  const totalQty = netSoldQty + (parseInt(p.initQty)||0);
+  const fifoSoldCost = computeFIFOCost(p, totalQty);
+  const benefProv = m.totalVentes - fifoSoldCost;
+  const margeUnitaireReelle = totalQty > 0 ? (m.totalVentes - m.totalInvesti) / totalQty : 0;
+  const lastLotPrice = (p.lots && p.lots.length) ? p.lots[p.lots.length-1].purchasePrice : (parseFloat(p.purchasePrice)||0);
+  const perfProd = m.totalInvesti > 0 ? Math.round(m.totalVentes / m.totalInvesti * 100) : 0;
+  const prixVenteMoyen = totalQty > 0 ? m.totalVentes / totalQty : 0;
+  const tauxMarge = prixVenteMoyen > 0 ? Math.round((prixVenteMoyen - (m.totalInvesti / Math.max(1, (parseInt(p.initialStock)||0) + (p.lots||[]).slice(1).reduce((a,l)=>a+(parseInt(l.qty)||0),0)))) / prixVenteMoyen * 100) : 0;
+
+  function getLotDate(prod, lotIdx) {
+    const lot = prod.lots && prod.lots[lotIdx];
+    if (lot && lot.date) return lot.date;
+    for (const sup of (db.supplies||[])) {
+      const match = sup.lots.find(sl => sl.productId === prod.id && sl.lotIndex === lotIdx);
+      if (match) return sup.date;
+    }
+    return null;
+  }
+  let firstDate = null;
+  for (let i = 0; i < (p.lots||[]).length; i++) {
+    const d = getLotDate(p, i);
+    if (d) { firstDate = d; break; }
+  }
+  let velociteLabel = 'Données insuffisantes';
+  if (firstDate && netSoldQty > 0) {
+    let endDate = new Date(); endDate.setHours(0,0,0,0);
+    if (stock === 0) {
+      const salesSorted = db.sales.filter(s => s.productId === id).sort((a,b) => a.date.localeCompare(b.date));
+      const totalLotQty = (p.lots||[]).reduce((a,l) => a + (parseInt(l.qty)||0), 0);
+      let cumQty = parseInt(p.initQty) || 0;
+      for (const s of salesSorted) {
+        cumQty += parseInt(s.qty)||0;
+        if (cumQty >= totalLotQty) { endDate = new Date(s.date + 'T00:00:00'); break; }
+      }
+    }
+    const marketDays = countMarketDaysExcluding(firstDate, endDate.toISOString().split('T')[0]);
+    if (marketDays > 0) velociteLabel = `${(netSoldQty/marketDays).toFixed(2)} unité(s) / jour de marché`;
+  }
+
+  const initBlock = (p.initQty || p.initTotal) ? `
+    <div class="divider"></div>
+    <div style="font-size:12px;color:var(--text3);font-style:italic;margin-bottom:8px;">Données initiales (avant l'application)</div>
+    <div class="detail-metrics">
+      <div class="detail-metric"><div class="detail-metric-label">Qté vendue initiale</div><div class="detail-metric-value">${parseInt(p.initQty)||0}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Ventes initiales</div><div class="detail-metric-value">${fmt(p.initTotal||0)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Encaissé initial</div><div class="detail-metric-value gold">${fmt(p.initEnc||0)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Reste initial</div><div class="detail-metric-value red">${fmt((p.initTotal||0)-(p.initEnc||0))}</div></div>
+    </div>` : '';
+
+  const globalContent = `
+    <div class="detail-metrics">
+      <div class="detail-metric"><div class="detail-metric-label">Prix achat (lot actuel)</div><div class="detail-metric-value">${fmt(lastLotPrice)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Prix vente</div><div class="detail-metric-value green">${fmt(p.salePrice)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Marge unitaire réelle</div><div class="detail-metric-value ${margeUnitaireReelle >= 0 ? 'green' : 'red'}">${fmt(margeUnitaireReelle)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Stock restant</div><div class="detail-metric-value ${stock <= 2 ? 'red' : ''}">${stock}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Unités vendues</div><div class="detail-metric-value">${totalQty}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Nb de lots</div><div class="detail-metric-value">${(p.lots||[]).length}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Taux de marge</div><div class="detail-metric-value ${tauxMarge >= 0 ? 'green' : 'red'}">${tauxMarge} %</div></div>
+      <div class="detail-metric" style="grid-column:1/-1;"><div class="detail-metric-label">Vélocité de vente</div><div class="detail-metric-value" style="font-size:14px;">${velociteLabel}</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="detail-metrics">
+      <div class="detail-metric"><div class="detail-metric-label">Total investi</div><div class="detail-metric-value">${fmt(m.totalInvesti)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Total ventes</div><div class="detail-metric-value">${fmt(m.totalVentes)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Bénéfice provisoire</div><div class="detail-metric-value gold">${fmt(benefProv)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Bénéfice réel</div><div class="detail-metric-value green">${fmt(m.beneficeReel)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Total encaissé</div><div class="detail-metric-value gold">${fmt(m.totalEncaisse)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Reste à encaisser</div><div class="detail-metric-value red">${fmt(m.resteEncaisser)}</div></div>
+    </div>
+    <div style="background:var(--bg2);border-radius:8px;padding:12px;text-align:center;margin-bottom:8px;">
+      <div class="detail-metric-label">Indicateur de performance</div>
+      <div style="font-family:'Playfair Display',serif;font-size:24px;color:${perfProd >= 100 ? 'var(--green)' : 'var(--gold)'};">${perfProd} %</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">${perfProd >= 100 ? '✓ Investi récupéré' : '⏳ Seuil non atteint'}</div>
+    </div>
+    ${initBlock}`;
+
+  const subStyle = `font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;margin-bottom:4px;padding:8px 12px;background:var(--bg2);border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);`;
+
+  const globalGroupId = 'prod-global-' + id;
+
+  const lots = p.lots || [];
+  const lotAccordions = [...lots].map((lot, i) => ({ lot, i })).reverse().map(({ lot, i }) => {
+    const lotGroupId = 'prod-lot-' + id + '-' + i;
+    const lotTitle = `Lot ${i+1}${lot.date ? ' · ' + formatMarketDate(lot.date) : ' · Lot initial'}`;
+    return `
+    <div style="${subStyle}" onclick="toggleGroup('${lotGroupId}')">
+      <span>${lotTitle}</span>
+      <span>${lot.qty} unités · ${fmt(lot.purchasePrice)} ▾</span>
+    </div>
+    <div id="${lotGroupId}" class="history-group-details collapsed">
+      ${buildLotDetail(p, i)}
+    </div>`;
+  }).join('');
+
+  return `
+    <div style="${subStyle}" onclick="toggleGroup('${globalGroupId}')">
+      <span>Vue globale</span>
+      <span>${lots.length} lot(s) · Stock ${stock} ▾</span>
+    </div>
+    <div id="${globalGroupId}" class="history-group-details collapsed">
+      ${globalContent}
+    </div>
+    ${lotAccordions}`;
+}
+
+function buildLotDetail(p, lotIndex) {
+  const lot = p.lots[lotIndex];
+  const soldQty = db.sales.filter(s => s.productId === p.id).reduce((a,s) => a + (parseInt(s.qty)||0), 0);
+  const returnedQty = (db.retours||[]).filter(r => r.productId === p.id).reduce((a,r) => a + (parseInt(r.qty)||0), 0);
+  const netSoldQty = soldQty - returnedQty;
+  const totalConsumed = netSoldQty + (parseInt(p.initQty)||0);
+
+  // Quantité consommée avant ce lot (FIFO)
+  let consumedBefore = 0;
+  for (let i = 0; i < lotIndex; i++) consumedBefore += parseInt(p.lots[i].qty)||0;
+
+  const lotQty = parseInt(lot.qty)||0;
+  const lotSoldQty = Math.max(0, Math.min(totalConsumed - consumedBefore, lotQty));
+  const lotStock = lotQty - lotSoldQty;
+  const lotCost = lotQty * (parseFloat(lot.purchasePrice)||0);
+  const lotSoldCost = lotSoldQty * (parseFloat(lot.purchasePrice)||0);
+
+  // CA attribué via prix de vente moyen global
+  const m = computeMetrics(p.id);
+  const totalQty = netSoldQty + (parseInt(p.initQty)||0);
+  const avgSalePrice = totalQty > 0 ? m.totalVentes / totalQty : (parseFloat(p.salePrice)||0);
+  const lotCA = lotSoldQty * avgSalePrice;
+  const lotBenefProv = lotCA - lotSoldCost;
+  const lotPerf = lotCost > 0 ? Math.round(lotCA / lotCost * 100) : 0;
+  const lotTauxMarge = avgSalePrice > 0 ? Math.round((avgSalePrice - (parseFloat(lot.purchasePrice)||0)) / avgSalePrice * 100) : 0;
+
+  // Date du lot
+  let lotDate = lot.date;
+  if (!lotDate) {
+    for (const sup of (db.supplies||[])) {
+      const match = sup.lots.find(sl => sl.productId === p.id && sl.lotIndex === lotIndex);
+      if (match) { lotDate = sup.date; break; }
+    }
+  }
+
+  // Vélocité du lot
+  let velociteLabel = 'Données insuffisantes';
+  if (lotDate && lotSoldQty > 0) {
+    let endDate = new Date(); endDate.setHours(0,0,0,0);
+    if (lotStock === 0) {
+      const salesSorted = db.sales.filter(s => s.productId === p.id).sort((a,b) => a.date.localeCompare(b.date));
+      const threshold = consumedBefore + lotQty;
+      let running = parseInt(p.initQty)||0;
+      for (const s of salesSorted) {
+        running += parseInt(s.qty)||0;
+        if (running >= threshold) { endDate = new Date(s.date+'T00:00:00'); break; }
+      }
+    }
+    const md = countMarketDaysExcluding(lotDate, endDate.toISOString().split('T')[0]);
+    if (md > 0) velociteLabel = `${(lotSoldQty/md).toFixed(2)} unité(s) / jour de marché`;
+  }
+
+  return `
+    <div class="detail-metrics" style="margin-top:10px;">
+      <div class="detail-metric"><div class="detail-metric-label">Prix d'achat</div><div class="detail-metric-value">${fmt(lot.purchasePrice)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Quantité du lot</div><div class="detail-metric-value">${lotQty}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Unités vendues</div><div class="detail-metric-value">${lotSoldQty}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Stock restant</div><div class="detail-metric-value ${lotStock <= 2 ? 'red' : ''}">${lotStock}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Total investi</div><div class="detail-metric-value">${fmt(lotCost)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">CA attribué</div><div class="detail-metric-value">${fmt(lotCA)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Bénéfice provisoire</div><div class="detail-metric-value gold">${fmt(lotBenefProv)}</div></div>
+      <div class="detail-metric"><div class="detail-metric-label">Taux de marge</div><div class="detail-metric-value ${lotTauxMarge >= 0 ? 'green' : 'red'}">${lotTauxMarge} %</div></div>
+      <div class="detail-metric" style="grid-column:1/-1;"><div class="detail-metric-label">Vélocité</div><div class="detail-metric-value" style="font-size:14px;">${velociteLabel}</div></div>
+      <div class="detail-metric" style="grid-column:1/-1;background:${lotPerf >= 100 ? 'var(--green-pale)' : 'var(--gold-pale)'};border:1px solid ${lotPerf >= 100 ? '#b0d4b8' : '#e8d0a0'};text-align:center;">
+        <div class="detail-metric-label">Performance du lot</div>
+        <div class="detail-metric-value" style="color:${lotPerf >= 100 ? 'var(--green)' : 'var(--gold)'};">${lotPerf} %</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${lotPerf >= 100 ? '✓ Investi récupéré' : '⏳ Seuil non atteint'}</div>
+      </div>
+    </div>`;
+}
+
+function getStock(productId) {
+  const p = db.products.find(x => x.id === productId);
+  if (!p) return 0;
+  const totalLotQty = (p.lots || []).reduce((a, lot) => a + (parseInt(lot.qty) || 0), 0) || (parseInt(p.initialStock) || 0);
+  const sold = db.sales.filter(s => s.productId === productId).reduce((a,s) => a + (parseInt(s.qty)||0), 0);
+  const returned = (db.retours || []).filter(r => r.productId === productId).reduce((a,r) => a + (parseInt(r.qty)||0), 0);
+  const initQty = parseInt(p.initQty) || 0;
+  return totalLotQty - sold - initQty + returned;
+}
+
+// ─── PRODUCT MODAL ──────────────────────────────────────────────────────────
+function openProductModal(id) {
+  editingProductId = id;
+  const modal = document.getElementById('product-modal');
+  const title = document.getElementById('product-modal-title');
+  const err = document.getElementById('pm-error');
+  err.style.display = 'none';
+
+  if (id) {
+    const p = db.products.find(x => x.id === id);
+    title.textContent = 'Modifier le produit';
+    document.getElementById('pm-name').value = p.name || '';
+    document.getElementById('pm-ref').value = p.ref || '';
+    document.getElementById('pm-buy').value = p.purchasePrice || '';
+    document.getElementById('pm-sell').value = p.salePrice || '';
+    document.getElementById('pm-stock').value = p.initialStock || '';
+    document.getElementById('pm-init-qty').value = p.initQty || '';
+    document.getElementById('pm-init-total').value = p.initTotal || '';
+    document.getElementById('pm-init-enc').value = p.initEnc || '';
+    const lot0 = p.lots && p.lots[0];
+    const lot0Val = lot0 ? (parseFloat(lot0.purchasePrice)||0) * (parseInt(lot0.qty)||0) : (parseFloat(p.purchasePrice)||0) * (parseInt(p.initialStock)||0);
+    document.getElementById('pm-reinvesti').value = lot0 && lot0.reinvesti !== undefined ? lot0.reinvesti : lot0Val;
+  } else {
+    title.textContent = 'Ajouter un produit';
+    document.getElementById('pm-name').value = '';
+    document.getElementById('pm-ref').value = '';
+    document.getElementById('pm-buy').value = '';
+    document.getElementById('pm-sell').value = '';
+    document.getElementById('pm-stock').value = '';
+    document.getElementById('pm-reinvesti').value = '';
+    document.getElementById('pm-init-qty').value = '';
+    document.getElementById('pm-init-total').value = '';
+    document.getElementById('pm-init-enc').value = '';
+  }
+  modal.classList.add('open');
+}
+
+function closeProductModal() {
+  document.getElementById('product-modal').classList.remove('open');
+  editingProductId = null;
+}
+
+function autoFillRmReinvesti() {
+  const qty = parseInt(document.getElementById('rm-qty').value) || 0;
+  const price = parseFloat(document.getElementById('rm-price').value) || 0;
+  const total = qty * price;
+  if (total > 0) document.getElementById('rm-reinvesti').value = total.toFixed(2);
+  updateRmReinvestiHint();
+}
+
+function updateRmReinvestiHint() {
+  const qty = parseInt(document.getElementById('rm-qty').value) || 0;
+  const price = parseFloat(document.getElementById('rm-price').value) || 0;
+  const total = qty * price;
+  const reinvesti = parseFloat(document.getElementById('rm-reinvesti').value) || 0;
+  const propre = Math.max(0, total - reinvesti);
+  const hint = document.getElementById('rm-reinvesti-hint');
+  hint.textContent = total > 0 ? `Capital propre : ${fmt(propre)} — Réinvesti : ${fmt(Math.min(reinvesti, total))}` : '';
+}
+
+function autoFillPmReinvesti() {
+  if (editingProductId) return;
+  const buy = parseFloat(document.getElementById('pm-buy').value) || 0;
+  const stock = parseInt(document.getElementById('pm-stock').value) || 0;
+  const total = buy * stock;
+  if (total > 0) document.getElementById('pm-reinvesti').value = total.toFixed(2);
+  updatePmReinvestiHint();
+}
+
+function updatePmReinvestiHint() {
+  const buy = parseFloat(document.getElementById('pm-buy').value) || 0;
+  const stock = parseInt(document.getElementById('pm-stock').value) || 0;
+  const reinvesti = parseFloat(document.getElementById('pm-reinvesti').value) || 0;
+  const total = buy * stock;
+  const propre = Math.max(0, total - reinvesti);
+  document.getElementById('pm-reinvesti-hint').textContent = total > 0 ? `Capital propre : ${fmt(propre)} — Réinvesti : ${fmt(Math.min(reinvesti, total))}` : '';
+}
+
+function saveProduct() {
+  const name = document.getElementById('pm-name').value.trim();
+  const ref = document.getElementById('pm-ref').value.trim();
+  const buy = parseFloat(document.getElementById('pm-buy').value);
+  const sell = parseFloat(document.getElementById('pm-sell').value);
+  const stock = parseInt(document.getElementById('pm-stock').value);
+  const initQty = parseInt(document.getElementById('pm-init-qty').value) || 0;
+  const initTotal = parseFloat(document.getElementById('pm-init-total').value) || 0;
+  const initEnc = parseFloat(document.getElementById('pm-init-enc').value) || 0;
+  const reinvestiInput = parseFloat(document.getElementById('pm-reinvesti').value);
+  const lotVal = buy * stock;
+  const reinvesti = isNaN(reinvestiInput) ? lotVal : Math.min(reinvestiInput, lotVal);
+  const err = document.getElementById('pm-error');
+
+  if (!name && !ref) { err.textContent = 'Veuillez saisir au moins un nom ou une référence.'; err.style.display='block'; return; }
+  if (isNaN(buy) || buy < 0) { err.textContent = 'Prix d\'achat invalide.'; err.style.display='block'; return; }
+  if (isNaN(sell) || sell < 0) { err.textContent = 'Prix de vente invalide.'; err.style.display='block'; return; }
+  if (isNaN(stock) || stock < 0) { err.textContent = 'Stock invalide.'; err.style.display='block'; return; }
+  if (initEnc > initTotal) { err.textContent = 'Le montant encaissé ne peut pas dépasser le montant total des ventes existantes.'; err.style.display='block'; return; }
+
+  if (editingProductId) {
+    const p = db.products.find(x => x.id === editingProductId);
+    p.name = name; p.ref = ref; p.salePrice = sell;
+    p.initQty = initQty; p.initTotal = initTotal; p.initEnc = initEnc;
+    if (!p.lots) p.lots = [];
+    if (p.lots.length === 0) {
+      p.lots.push({ id: uid(), date: '', qty: stock, purchasePrice: buy, reinvesti });
+      p.initialStock = stock; p.purchasePrice = buy;
+    } else {
+      p.lots[0].qty = stock;
+      p.lots[0].purchasePrice = buy;
+      p.lots[0].reinvesti = reinvesti;
+      p.initialStock = stock; p.purchasePrice = buy;
+    }
+  } else {
+    const newP = { id: uid(), name, ref, purchasePrice: buy, salePrice: sell, initialStock: stock, initQty, initTotal, initEnc, lots: [{ id: uid(), date: '', qty: stock, purchasePrice: buy, reinvesti }] };
+    db.products.push(newP);
+  }
+
+  saveDB();
+  closeProductModal();
+  renderProducts();
+  renderDashboard();
+}
+
+// ─── SALE FORM ──────────────────────────────────────────────────────────────
+function initSaleForm() {
+  saleLines = [];
+  saleEncaisse = true;
+  saleMode = 'normal';
+  setSaleMode('normal');
+  renderSaleLines();
+  document.getElementById('sale-recap').style.display = 'none';
+
+  const sel = document.getElementById('sale-date');
+  sel.innerHTML = '';
+  getMarketDays(60).forEach(d => {
+    const iso = dateStr(d);
+    const opt = document.createElement('option');
+    opt.value = iso;
+    opt.textContent = formatMarketDate(iso);
+    sel.appendChild(opt);
+  });
+
+  const psel = document.getElementById('sale-product');
+  psel.innerHTML = '<option value="">— Sélectionner un produit —</option>';
+  const sortedP = [...db.products].filter(p => getStock(p.id) > 0).sort((a,b) => getStock(b.id) - getStock(a.id));
+  sortedP.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = productLabel(p);
+    psel.appendChild(opt);
+  });
+
+  document.getElementById('sale-price').value = '';
+  document.getElementById('sale-qty').value = '1';
+  document.getElementById('sale-product-info').style.display = 'none';
+  setEncaisse(true);
+  updateSaleTotal();
+}
+
+function onSaleProductChange() {
+  const pid = document.getElementById('sale-product').value;
+  const info = document.getElementById('sale-product-info');
+  if (!pid) { info.style.display = 'none'; return; }
+  const p = db.products.find(x => x.id === pid);
+  if (saleMode === 'normal') {
+    document.getElementById('sale-price').value = p.salePrice;
+  }
+  const stock = getStock(pid);
+  info.style.display = 'block';
+  info.textContent = 'Prix de vente réel : ' + fmt(p.salePrice) + ' · Stock restant : ' + stock;
+  updateSaleTotal();
+}
+
+function setEncaisse(val) {
+  saleEncaisse = val;
+  document.getElementById('enc-btn-yes').classList.toggle('active', val);
+  document.getElementById('enc-btn-no').classList.toggle('active', !val);
+}
+
+function updateSaleTotal() {
+  let total = 0;
+  if (saleMode === 'normal') {
+    const price = parseFloat(document.getElementById('sale-price').value) || 0;
+    const qty = parseInt(document.getElementById('sale-qty').value) || 0;
+    total = price * qty;
+  } else {
+    total = parseFloat(document.getElementById('sale-total-gros').value) || 0;
+  }
+  document.getElementById('sale-total-display').textContent = total > 0 ? 'Sous-total : ' + fmt(total) : '';
+}
+
+function addSaleLine() {
+  const pid = document.getElementById('sale-product').value;
+  const qty = parseInt(document.getElementById('sale-qty').value);
+
+  if (!pid) { alert('Veuillez sélectionner un produit.'); return; }
+  if (!qty || qty <= 0) { alert('Veuillez saisir une quantité valide.'); return; }
+
+  const p = db.products.find(x => x.id === pid);
+  let price, totalAmount, isGros = false;
+
+  if (saleMode === 'normal') {
+    price = parseFloat(document.getElementById('sale-price').value);
+    if (!price || price <= 0) { alert('Veuillez saisir un prix valide.'); return; }
+    totalAmount = price * qty;
+  } else {
+    totalAmount = parseFloat(document.getElementById('sale-total-gros').value);
+    if (!totalAmount || totalAmount <= 0) { alert('Veuillez saisir un montant total valide.'); return; }
+    price = totalAmount / qty;
+    isGros = true;
+  }
+
+  saleLines.push({ productId: pid, productLabel: productLabel(p), price, qty, totalAmount, encaissee: saleEncaisse, isGros });
+
+  document.getElementById('sale-product').value = '';
+  document.getElementById('sale-price').value = '';
+  document.getElementById('sale-total-gros').value = '';
+  document.getElementById('sale-qty').value = '1';
+  document.getElementById('sale-product-info').style.display = 'none';
+  updateSaleTotal();
+  renderSaleLines();
+}
+
+function renderSaleLines() {
+  const container = document.getElementById('sale-lines-container');
+  const list = document.getElementById('sale-lines-list');
+  if (saleLines.length === 0) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+
+  let grand = 0;
+  list.innerHTML = saleLines.map((l, i) => {
+    const total = l.totalAmount || (l.price * l.qty);
+    grand += total;
+    const modeLabel = l.isGros ? ' <span class="badge badge-gold">En gros</span>' : '';
+    return `<div class="sale-line">
+      <div>
+        <div class="sale-line-info">${l.productLabel} × ${l.qty}${l.isGros ? ' — total ' + fmt(total) : ' à ' + fmt(l.price)}${modeLabel}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${l.encaissee ? '✓ Encaissée' : '⏳ En attente'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="sale-line-total">${fmt(total)}</span>
+        <button class="btn-ghost" onclick="removeSaleLine(${i})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('sale-grand-total').textContent = fmt(grand);
+}
+
+function removeSaleLine(i) {
+  saleLines.splice(i, 1);
+  renderSaleLines();
+}
+
+let lastSaleRecap = { lines: [], date: '' };
+
+function validateSale() {
+  if (saleLines.length === 0) { alert('Ajoutez au moins une ligne de vente.'); return; }
+  const date = document.getElementById('sale-date').value;
+
+  // Sauvegarder le récapitulatif avant de vider saleLines
+  lastSaleRecap = { lines: saleLines.map(l => ({...l})), date };
+
+  saleLines.forEach(l => {
+    db.sales.push({
+      id: uid(),
+      productId: l.productId,
+      date,
+      price: l.price,
+      qty: l.qty,
+      totalAmount: l.totalAmount || (l.price * l.qty),
+      isGros: l.isGros || false,
+      encaissee: l.encaissee
+    });
+  });
+
+  saveDB();
+  saleLines = [];
+  renderSaleLines();
+
+  // Afficher le récapitulatif
+  const dateLabel = formatMarketDate(date);
+  let detailText = dateLabel + '\n\n';
+  lastSaleRecap.lines.forEach(l => {
+    const total = l.totalAmount || (l.price * l.qty);
+    detailText += `${l.qty} × ${l.productLabel} = ${fmt(total)}\n`;
+  });
+  document.getElementById('sale-recap-content').textContent = detailText.trim();
+  document.getElementById('sale-recap').style.display = 'block';
+  document.getElementById('sale-lines-container').style.display = 'none';
+  document.getElementById('sale-recap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function copyRecap(type) {
+  const date = lastSaleRecap.date;
+  const dateLabel = formatMarketDate(date);
+  const m = computeMetrics();
+
+  let text = '';
+
+  if (type === 'detail') {
+    text = dateLabel + '\n\n';
+    lastSaleRecap.lines.forEach(l => {
+      const total = l.totalAmount || (l.price * l.qty);
+      text += `${l.qty} × ${l.productLabel} = ${fmt(total)}\n`;
+    });
+    text = text.trim();
+  } else if (type === 'jour') {
+    const totalJour = db.sales
+      .filter(s => s.date === date)
+      .reduce((a, s) => a + (s.totalAmount || (s.price * s.qty)), 0)
+      - (db.retours || []).filter(r => r.date === date).reduce((a, r) => a + (r.price * r.qty), 0);
+    text = `Total du jour (${dateLabel}) : ${fmt(totalJour)}`;
+  } else if (type === 'reste') {
+    text = `Reste à encaisser : ${fmt(m.resteEncaisser)}`;
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btnId = type === 'detail' ? 'btn-copy-detail' : type === 'jour' ? 'btn-copy-jour' : 'btn-copy-reste';
+    const btn = document.getElementById(btnId);
+    const original = btn.textContent;
+    btn.textContent = '✓ Copié !';
+    btn.style.background = 'var(--green)';
+    btn.style.color = 'white';
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 2000);
+  }).catch(() => {
+    alert('Impossible de copier automatiquement. Sélectionne le texte manuellement.');
+  });
+}
+
+// ─── PAYMENT FORM ────────────────────────────────────────────────────────────
+function initPaymentForm() {
+  const m = computeMetrics();
+  document.getElementById('reste-info').textContent = 'Reste à encaisser actuellement : ' + fmt(m.resteEncaisser);
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('pay-note').value = '';
+  document.getElementById('pay-match-info').style.display = 'none';
+  document.getElementById('pay-checks').style.display = 'none';
+
+  // Afficher les retours non rattachés
+  const retoursNonRattaches = (db.retours || []).filter(r => !r.versementId);
+  const retourSection = document.getElementById('pay-retours-section');
+  if (retoursNonRattaches.length > 0) {
+    const totalRetours = retoursNonRattaches.reduce((a,r) => a + (parseFloat(r.price)||0)*(parseInt(r.qty)||0), 0);
+    retourSection.style.display = 'block';
+    retourSection.innerHTML = `
+      <div class="divider"></div>
+      <label>Retours en cours (seront rattachés à ce versement)</label>
+      <div style="margin-top:8px;">
+        ${retoursNonRattaches.map(r => {
+          const p = db.products.find(x => x.id === r.productId);
+          const label = p ? productLabel(p) : 'Produit supprimé';
+          const amt = (parseFloat(r.price)||0)*(parseInt(r.qty)||0);
+          return `<div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--red-pale);border-radius:8px;margin-bottom:6px;font-size:13px;">
+            <div>
+              <div style="font-weight:500;">↩ ${label} × ${r.qty}</div>
+              <div style="font-size:11px;color:var(--text3);">${formatMarketDate(r.date)}</div>
+            </div>
+            <div style="color:var(--red);font-weight:600;">moins ${fmt(amt)}</div>
+          </div>`;
+        }).join('')}
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">Total retours : moins ${fmt(totalRetours)}</div>
+      </div>`;
+  } else {
+    retourSection.style.display = 'none';
+    retourSection.innerHTML = '';
+  }
+}
+
+function onPayAmountChange() {
+  const amount = parseFloat(document.getElementById('pay-amount').value) || 0;
+  if (amount <= 0) {
+    document.getElementById('pay-match-info').style.display = 'none';
+    document.getElementById('pay-checks').style.display = 'none';
+    return;
+  }
+
+  const m = computeMetrics();
+  const nonEncaissed = db.sales.filter(s => !s.encaissee);
+
+  const matchEl = document.getElementById('pay-match-info');
+  const checksEl = document.getElementById('pay-checks');
+
+  if (Math.abs(amount - m.resteEncaisser) < 0.01) {
+    matchEl.style.display = 'block';
+    matchEl.className = 'alert alert-info';
+    matchEl.textContent = '✓ Le montant correspond exactement au reste à encaisser. Toutes les ventes en attente seront marquées comme encaissées automatiquement.';
+    checksEl.style.display = 'none';
+  } else {
+    matchEl.style.display = 'block';
+    matchEl.className = 'alert alert-warn';
+    matchEl.textContent = 'Le montant ne correspond pas exactement (' + fmt(m.resteEncaisser) + ' en attente). Veuillez sélectionner manuellement les ventes couvertes.';
+    renderPaymentChecks(nonEncaissed);
+    checksEl.style.display = 'block';
+  }
+}
+
+function renderPaymentChecks(nonEncaissed) {
+  const list = document.getElementById('pay-check-list');
+
+  const lastPayDate = db.payments.length > 0
+    ? db.payments.reduce((latest, p) => p.date > latest ? p.date : latest, '')
+    : null;
+  const filtered = lastPayDate
+    ? nonEncaissed.filter(s => s.date >= lastPayDate)
+    : nonEncaissed;
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-text" style="color:var(--text3);">Aucune vente en attente d\'encaissement.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(s => {
+    const p = db.products.find(x => x.id === s.productId);
+    const label = p ? productLabel(p) : 'Produit supprimé';
+    const amt = s.totalAmount || (s.price * s.qty);
+    return `<div class="payment-sale-check" onclick="togglePayCheck('${s.id}',this)">
+      <div>
+        <div style="font-weight:500;font-size:13px;">${label} × ${s.qty}</div>
+        <div style="font-size:11px;color:var(--text3);">${formatMarketDate(s.date)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-weight:600;color:var(--green);">${fmt(amt)}</span>
+        <input type="checkbox" id="chk-${s.id}" data-amount="${amt}" onclick="event.stopPropagation();" onchange="updateSelectedTotal()">
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePayCheck(id, el) {
+  const chk = document.getElementById('chk-' + id);
+  chk.checked = !chk.checked;
+  el.classList.toggle('selected', chk.checked);
+  updateSelectedTotal();
+}
+
+function updateSelectedTotal() {
+  let total = 0;
+  document.querySelectorAll('#pay-check-list input[type="checkbox"]:checked').forEach(chk => {
+    total += parseFloat(chk.dataset.amount) || 0;
+  });
+  document.getElementById('pay-selected-total').textContent = fmt(total);
+}
+
+function validatePayment() {
+  const amount = parseFloat(document.getElementById('pay-amount').value);
+  const date = document.getElementById('pay-date').value;
+  const note = document.getElementById('pay-note').value.trim();
+
+  if (!amount || amount <= 0) { alert('Veuillez saisir un montant valide.'); return; }
+  if (!date) { alert('Veuillez saisir une date.'); return; }
+
+  const m2 = computeMetrics();
+  const nonEncaissed2 = db.sales.filter(s => !s.encaissee);
+  let coveredIds = [];
+
+  if (Math.abs(amount - m2.resteEncaisser) < 0.01) {
+    coveredIds = nonEncaissed2.map(s => s.id);
+  } else {
+    document.querySelectorAll('#pay-check-list input[type="checkbox"]:checked').forEach(chk => {
+      const id = chk.id.replace('chk-','');
+      coveredIds.push(id);
+    });
+  }
+
+  coveredIds.forEach(sid => {
+    const s = db.sales.find(x => x.id === sid);
+    if (s) s.encaissee = true;
+  });
+
+  const newPay = { id: uid(), amount, date, note, salesCovered: coveredIds };
+  db.payments.push(newPay);
+
+  // Rattacher automatiquement les retours non encore rattachés
+  (db.retours || []).forEach(r => {
+    if (!r.versementId) r.versementId = newPay.id;
+  });
+
+  saveDB();
+  alert('Versement enregistré avec succès !');
+  showPage('dashboard');
+}
+
+// ─── HISTORY ─────────────────────────────────────────────────────────────────
+function toggleGroup(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('collapsed');
+}
+
+function showHistoryTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='sales')||(i===1&&tab==='payments')));
+  document.getElementById('history-sales').style.display = tab === 'sales' ? 'block' : 'none';
+  document.getElementById('history-payments').style.display = tab === 'payments' ? 'block' : 'none';
+}
+
+function renderHistory() {
+  renderHistorySales();
+  renderHistoryPayments();
+}
+
+function renderHistorySales() {
+  const el = document.getElementById('history-sales');
+  if (db.sales.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div><div class="empty-text">Aucune vente enregistrée.</div></div>';
+    return;
+  }
+
+  const grouped = {};
+  const sorted = [...db.sales].sort((a,b) => b.date.localeCompare(a.date));
+  sorted.forEach(s => {
+    if (!grouped[s.date]) grouped[s.date] = { sales: [], retours: [] };
+    grouped[s.date].sales.push(s);
+  });
+  (db.retours||[]).forEach(r => {
+    if (!grouped[r.date]) grouped[r.date] = { sales: [], retours: [] };
+    grouped[r.date].retours.push(r);
+  });
+
+  let html = '';
+  Object.entries(grouped).sort((a,b) => b[0].localeCompare(a[0])).forEach(([date, group]) => {
+    const dayTotal = group.sales.reduce((a,s) => a + (s.totalAmount || (s.price * s.qty)), 0)
+                   - group.retours.reduce((a,r) => a + (r.price * r.qty), 0);
+    const groupId = 'sale-group-' + date.replace(/-/g,'');
+    html += `<h2 class="history-group-title" onclick="toggleGroup('${groupId}')">
+      <span>${formatMarketDate(date)}</span>
+      <span>${fmt(dayTotal)} ▾</span>
+    </h2>
+    <div id="${groupId}" class="history-group-details collapsed">`;
+    group.sales.forEach(s => {
+      const p = db.products.find(x => x.id === s.productId);
+      const label = p ? productLabel(p) : 'Produit supprimé';
+      const amt = s.totalAmount || (s.price * s.qty);
+      const detail = s.isGros ? `${s.qty} unité(s) — montant global` : `${s.qty} × ${fmt(s.price)}`;
+      html += `<div class="history-item">
+        <div class="history-header">
+          <div>
+            <div style="font-weight:500;">${label}${s.isGros ? ' <span class="badge badge-gold">En gros</span>' : ''}</div>
+            <div class="history-detail">${detail}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div>
+              <div class="history-amount" style="text-align:right;">${fmt(amt)}</div>
+              <div style="text-align:right;margin-top:4px;">
+                <span class="badge ${s.encaissee ? 'badge-green' : 'badge-gold'}">${s.encaissee ? '✓ Encaissée' : '⏳ En attente'}</span>
+              </div>
+            </div>
+            <button class="btn btn-danger" onclick="deleteSale('${s.id}')">✕</button>
+          </div>
+        </div>
+      </div>`;
+    });
+    group.retours.forEach(r => {
+      const p = db.products.find(x => x.id === r.productId);
+      const label = p ? productLabel(p) : 'Produit supprimé';
+      const amt = r.price * r.qty;
+      html += `<div class="history-item" style="border-left:3px solid var(--red);">
+        <div class="history-header">
+          <div>
+            <div style="font-weight:500;">↩ Retour — ${label}</div>
+            <div class="history-detail">${r.qty} × ${fmt(r.price)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-family:'Playfair Display',serif;font-size:16px;color:var(--red);text-align:right;">moins ${fmt(amt)}</div>
+            <button class="btn btn-outline btn-sm" onclick="openRetourEditModal('${r.id}')">Modifier</button>
+            <button class="btn btn-danger" onclick="deleteRetour('${r.id}')">✕</button>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function renderHistoryPayments() {
+  const el = document.getElementById('history-payments');
+  if (db.payments.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">💶</div><div class="empty-text">Aucun versement enregistré.</div></div>';
+    return;
+  }
+
+  const sorted = [...db.payments].sort((a,b) => b.date.localeCompare(a.date));
+  el.innerHTML = sorted.map(pay => {
+    const d = new Date(pay.date + 'T00:00:00');
+    const dateLabel = d.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/, c => c.toUpperCase());
+    const groupId = 'pay-group-' + pay.id;
+    return `<h2 class="history-group-title" onclick="toggleGroup('${groupId}')">
+      <span>${dateLabel}</span>
+      <span>${fmt(pay.amount)} ▾</span>
+    </h2>
+    <div id="${groupId}" class="history-group-details collapsed">
+      <div class="history-item">
+        <div class="history-header">
+          <div>
+            ${pay.note ? `<div class="history-detail">${pay.note}</div>` : ''}
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">${pay.salesCovered.length} vente(s) marquée(s) encaissée(s)</div>
+          </div>
+          <button class="btn btn-danger" onclick="deletePayment('${pay.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteSale(id) {
+  if (!confirm('Supprimer cette vente ?')) return;
+  db.sales = db.sales.filter(s => s.id !== id);
+  saveDB();
+  renderHistory();
+  renderDashboard();
+}
+
+function deletePayment(id) {
+  const pay = db.payments.find(x => x.id === id);
+  if (!pay) return;
+  if (!confirm('Supprimer ce versement ? Les ventes marquées encaissées via ce versement repaseront en "En attente".')) return;
+
+  pay.salesCovered.forEach(sid => {
+    const coveredByOther = db.payments.some(p => p.id !== id && p.salesCovered.includes(sid));
+    if (!coveredByOther) {
+      const s = db.sales.find(x => x.id === sid);
+      if (s) s.encaissee = false;
+    }
+  });
+
+  db.payments = db.payments.filter(p => p.id !== id);
+  saveDB();
+  renderHistory();
+  renderDashboard();
+}
+
+let editingRetourId = null;
+
+function openRetourEditModal(id) {
+  editingRetourId = id;
+  const r = db.retours.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('rem-qty').value = r.qty;
+  document.getElementById('rem-price').value = r.price;
+  document.getElementById('rem-error').style.display = 'none';
+
+  // Peupler le select versements
+  const sel = document.getElementById('rem-versement');
+  sel.innerHTML = '<option value="">— Non rattaché —</option>';
+  [...db.payments].sort((a,b) => b.date.localeCompare(a.date)).forEach(pay => {
+    const d = new Date(pay.date + 'T00:00:00');
+    const dateLabel = d.toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+    const opt = document.createElement('option');
+    opt.value = pay.id;
+    opt.textContent = dateLabel + ' — ' + fmt(pay.amount) + (pay.note ? ' · ' + pay.note : '');
+    if (r.versementId === pay.id) opt.selected = true;
+    sel.appendChild(opt);
+  });
+
+  document.getElementById('retour-edit-modal').classList.add('open');
+}
+
+function closeRetourEditModal() {
+  document.getElementById('retour-edit-modal').classList.remove('open');
+  editingRetourId = null;
+}
+
+function saveRetourEdit() {
+  const qty = parseInt(document.getElementById('rem-qty').value);
+  const price = parseFloat(document.getElementById('rem-price').value);
+  const versementId = document.getElementById('rem-versement').value || null;
+  const err = document.getElementById('rem-error');
+  if (!qty || qty <= 0) { err.textContent = 'Quantité invalide.'; err.style.display = 'block'; return; }
+  if (!price || price <= 0) { err.textContent = 'Prix invalide.'; err.style.display = 'block'; return; }
+  const r = db.retours.find(x => x.id === editingRetourId);
+  if (!r) return;
+  r.qty = qty;
+  r.price = price;
+  r.versementId = versementId;
+  saveDB();
+  closeRetourEditModal();
+  renderHistory();
+  renderDashboard();
+}
+
+function deleteRetour(id) {
+  db.retours = db.retours.filter(r => r.id !== id);
+  saveDB();
+  renderHistory();
+  renderDashboard();
+}
+
+// ─── RÉAPPROVISIONNEMENT ─────────────────────────────────────────────────────
+function openReapproModal() {
+  const p = db.products.find(x => x.id === detailProductId);
+  if (!p) return;
+  document.getElementById('reappro-product-name').textContent = productLabel(p);
+  const lastPrice = (p.lots && p.lots.length) ? p.lots[p.lots.length-1].purchasePrice : (p.purchasePrice || '');
+  document.getElementById('rm-qty').value = '';
+  document.getElementById('rm-price').value = lastPrice;
+  document.getElementById('rm-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('rm-reinvesti').value = '';
+  document.getElementById('rm-error').style.display = 'none';
+  document.getElementById('reappro-modal').classList.add('open');
+}
+
+function closeReapproModal() {
+  document.getElementById('reappro-modal').classList.remove('open');
+}
+
+function saveReappro() {
+  const qty = parseInt(document.getElementById('rm-qty').value);
+  const price = parseFloat(document.getElementById('rm-price').value);
+  const date = document.getElementById('rm-date').value;
+  const err = document.getElementById('rm-error');
+
+  if (!qty || qty <= 0) { err.textContent = 'Quantité invalide.'; err.style.display='block'; return; }
+  if (!price || price <= 0) { err.textContent = 'Prix invalide.'; err.style.display='block'; return; }
+  if (!date) { err.textContent = 'Date requise.'; err.style.display='block'; return; }
+
+  const p = db.products.find(x => x.id === detailProductId);
+  if (!p.lots) p.lots = [];
+  const lotVal = qty * price;
+  const reinvestiInput = parseFloat(document.getElementById('rm-reinvesti').value);
+  const reinvesti = isNaN(reinvestiInput) ? lotVal : Math.min(reinvestiInput, lotVal);
+  p.lots.push({ id: uid(), date, qty, purchasePrice: price, reinvesti });
+  p.purchasePrice = price;
+
+  saveDB();
+  closeReapproModal();
+  renderProducts();
+  renderDashboard();
+}
+
+// ─── FIFO COST HELPER ────────────────────────────────────────────────────────
+function computeFIFOCost(p, qtyToValue) {
+  const lots = p.lots && p.lots.length ? p.lots : [{ qty: parseInt(p.initialStock)||0, purchasePrice: parseFloat(p.purchasePrice)||0 }];
+  let remaining = qtyToValue;
+  let cost = 0;
+  for (const lot of lots) {
+    if (remaining <= 0) break;
+    const take = Math.min(remaining, parseInt(lot.qty)||0);
+    cost += take * (parseFloat(lot.purchasePrice)||0);
+    remaining -= take;
+  }
+  return cost;
+}
+
+// ─── APPROVISIONNEMENTS ──────────────────────────────────────────────────────
+let supplyLots = [];
+let supplyExpenses = [];
+let editingSupplyId = null;
+
+function renderSupplies() {
+  const el = document.getElementById('supplies-list');
+  if (!db.supplies || db.supplies.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🚚</div><div class="empty-text">Aucun approvisionnement enregistré.</div></div>';
+    return;
+  }
+  const sorted = [...db.supplies].sort((a,b) => b.date.localeCompare(a.date));
+  el.innerHTML = sorted.map(s => {
+    const totalVentesSupply = s.lots.reduce((a, l) => {
+      const p = db.products.find(x => x.id === l.productId);
+      const initTotalLot = (l.lotIndex === 0 && p) ? (parseFloat(p.initTotal) || 0) : 0;
+      const ventesLot = db.sales
+        .filter(v => v.productId === l.productId && v.date >= s.date)
+        .reduce((sum, v) => sum + (v.totalAmount || (v.price * v.qty)), 0);
+      const retoursLot = (db.retours||[])
+        .filter(r => r.productId === l.productId && r.date >= s.date)
+        .reduce((sum, r) => sum + (r.price * r.qty), 0);
+      return a + initTotalLot + ventesLot - retoursLot;
+    }, 0);
+    const perf = s.total > 0 ? Math.round(totalVentesSupply / s.total * 100) : 0;
+    const diff = totalVentesSupply - s.total;
+    const d = new Date(s.date + 'T00:00:00');
+    const dateLabel = d.toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+    const groupId = 'supply-group-' + s.id;
+    return `<h2 class="history-group-title" onclick="toggleGroup('${groupId}')">
+      <span>${s.label} — ${dateLabel}</span>
+      <span>${fmt(s.total)} · ${perf}% ▾</span>
+    </h2>
+    <div id="${groupId}" class="history-group-details collapsed">
+      <div class="history-item" style="margin-bottom:12px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Total investi</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(s.total)}</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Total ventes</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(totalVentesSupply)}</div>
+          </div>
+          <div style="background:${diff >= 0 ? 'var(--green-pale)' : 'var(--red-pale)'};border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Différence</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;color:${diff >= 0 ? 'var(--green)' : 'var(--red)'};">${diff >= 0 ? '+' : ''}${fmt(diff)}</div>
+          </div>
+          <div style="background:${perf >= 100 ? 'var(--green-pale)' : 'var(--gold-pale)'};border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Performance</div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;color:${perf >= 100 ? 'var(--green)' : 'var(--gold)'};">${perf}%</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">
+          ${s.lots.map(l => {
+            const p = db.products.find(x => x.id === l.productId);
+            return `<span style="margin-right:10px;">📦 ${p ? productLabel(p) : '?'} (lot ${l.lotIndex+1}) × ${l.qty} à ${fmt(l.purchasePrice)}</span>`;
+          }).join('')}
+          ${s.expenses && s.expenses.length ? s.expenses.map(e => `<span style="margin-right:10px;">🧾 ${e.label} : ${fmt(e.amount)}</span>`).join('') : ''}
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline btn-sm" onclick="editSupply('${s.id}')">Modifier</button>
+          <button class="btn btn-danger" onclick="deleteSupply('${s.id}')">Supprimer</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openSupplyModal(id) {
+  editingSupplyId = id;
+  supplyLots = [];
+  supplyExpenses = [];
+  document.getElementById('supply-modal-title').textContent = id ? 'Modifier l\'approvisionnement' : 'Nouvel approvisionnement';
+  document.getElementById('sm-label').value = '';
+  document.getElementById('sm-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('sm-error').style.display = 'none';
+
+  const psel = document.getElementById('sm-lot-product');
+  psel.innerHTML = '<option value="">— Sélectionner —</option>';
+  db.products.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = productLabel(p);
+    psel.appendChild(opt);
+  });
+
+  refreshSupplyExpenseSelect();
+  renderSupplyLots();
+  renderSupplyExpenses();
+  updateSupplyTotal();
+  document.getElementById('supply-modal').classList.add('open');
+}
+
+function editSupply(id) {
+  const s = db.supplies.find(x => x.id === id);
+  if (!s) return;
+  editingSupplyId = id;
+  supplyLots = s.lots.map(l => ({...l}));
+  supplyExpenses = (s.expenses || []).map(e => ({...e}));
+  document.getElementById('supply-modal-title').textContent = 'Modifier l\'approvisionnement';
+  document.getElementById('sm-label').value = s.label;
+  document.getElementById('sm-date').value = s.date;
+  document.getElementById('sm-error').style.display = 'none';
+
+  const psel = document.getElementById('sm-lot-product');
+  psel.innerHTML = '<option value="">— Sélectionner —</option>';
+  db.products.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = productLabel(p);
+    psel.appendChild(opt);
+  });
+
+  refreshSupplyExpenseSelect();
+  renderSupplyLots();
+  renderSupplyExpenses();
+  updateSupplyTotal();
+  document.getElementById('supply-modal').classList.add('open');
+}
+
+function closeSupplyModal() {
+  document.getElementById('supply-modal').classList.remove('open');
+  editingSupplyId = null;
+  supplyLots = [];
+  supplyExpenses = [];
+}
+
+function onSupplyLotProductChange() {
+  const pid = document.getElementById('sm-lot-product').value;
+  const lsel = document.getElementById('sm-lot-select');
+  lsel.innerHTML = '<option value="">— Choisir un lot —</option>';
+  if (!pid) return;
+  const p = db.products.find(x => x.id === pid);
+  (p.lots || []).forEach((lot, i) => {
+    const alreadyAdded = supplyLots.some(sl => sl.productId === pid && sl.lotIndex === i);
+    const inOtherSupply = (db.supplies || []).some(s => s.id !== editingSupplyId && s.lots.some(sl => sl.productId === pid && sl.lotIndex === i));
+    if (!alreadyAdded && !inOtherSupply) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `Lot ${i+1}${lot.date ? ' · ' + formatMarketDate(lot.date) : ' · initial'} — ${lot.qty} unités à ${fmt(lot.purchasePrice)}`;
+      lsel.appendChild(opt);
+    }
+  });
+}
+
+function addSupplyLot() {
+  const pid = document.getElementById('sm-lot-product').value;
+  const lotIdx = document.getElementById('sm-lot-select').value;
+  if (!pid || lotIdx === '') { alert('Veuillez sélectionner un produit et un lot.'); return; }
+  const p = db.products.find(x => x.id === pid);
+  const lot = p.lots[parseInt(lotIdx)];
+  supplyLots.push({ productId: pid, productLabel: productLabel(p), lotIndex: parseInt(lotIdx), qty: lot.qty, purchasePrice: lot.purchasePrice });
+  document.getElementById('sm-lot-product').value = '';
+  document.getElementById('sm-lot-select').innerHTML = '<option value="">— Choisir un lot —</option>';
+  renderSupplyLots();
+  updateSupplyTotal();
+}
+
+function removeSupplyLot(i) {
+  supplyLots.splice(i, 1);
+  renderSupplyLots();
+  updateSupplyTotal();
+}
+
+function renderSupplyLots() {
+  const el = document.getElementById('sm-lots-list');
+  if (supplyLots.length === 0) { el.innerHTML = '<div style="font-size:13px;color:var(--text3);font-style:italic;">Aucun lot ajouté.</div>'; return; }
+  el.innerHTML = supplyLots.map((l, i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--green-pale);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:13px;">
+      <div>${l.productLabel} — Lot ${l.lotIndex+1} · ${l.qty} unités à ${fmt(l.purchasePrice)}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-weight:600;color:var(--green);">${fmt(l.qty * l.purchasePrice)}</span>
+        <button class="btn btn-danger" onclick="removeSupplyLot(${i})">Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+
+function refreshSupplyExpenseSelect() {
+  const sel = document.getElementById('sm-expense-select');
+  sel.innerHTML = '<option value="">— Sélectionner un frais —</option>';
+  (db.expenses || []).forEach(e => {
+    const alreadyAdded = supplyExpenses.some(se => se.expenseId === e.id);
+    const inOtherSupply = (db.supplies || []).some(s => s.id !== editingSupplyId && s.expenses && s.expenses.some(se => se.expenseId === e.id));
+    if (!alreadyAdded && !inOtherSupply) {
+      const opt = document.createElement('option');
+      opt.value = e.id;
+      const d = new Date(e.date + 'T00:00:00');
+      opt.textContent = `${e.description || e.category} · ${fmt(e.amount)} · ${d.toLocaleDateString('fr-FR')}`;
+      sel.appendChild(opt);
+    }
+  });
+}
+
+function addSupplyExpense() {
+  const eid = document.getElementById('sm-expense-select').value;
+  if (!eid) { alert('Veuillez sélectionner un frais.'); return; }
+  const e = db.expenses.find(x => x.id === eid);
+  supplyExpenses.push({ expenseId: eid, label: e.description || e.category, amount: e.amount });
+  refreshSupplyExpenseSelect();
+  renderSupplyExpenses();
+  updateSupplyTotal();
+}
+
+function removeSupplyExpense(i) {
+  supplyExpenses.splice(i, 1);
+  refreshSupplyExpenseSelect();
+  renderSupplyExpenses();
+  updateSupplyTotal();
+}
+
+function renderSupplyExpenses() {
+  const el = document.getElementById('sm-expenses-list');
+  if (supplyExpenses.length === 0) { el.innerHTML = '<div style="font-size:13px;color:var(--text3);font-style:italic;">Aucun frais rattaché.</div>'; return; }
+  el.innerHTML = supplyExpenses.map((e, i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--gold-pale);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:13px;">
+      <div>${e.label}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-weight:600;color:var(--gold);">${fmt(e.amount)}</span>
+        <button class="btn-ghost" onclick="removeSupplyExpense(${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function updateSupplyTotal() {
+  const total = supplyLots.reduce((a,l) => a + l.qty * l.purchasePrice, 0) + supplyExpenses.reduce((a,e) => a + (parseFloat(e.amount)||0), 0);
+  document.getElementById('sm-total').textContent = fmt(total);
+}
+
+function saveSupply() {
+  const label = document.getElementById('sm-label').value.trim();
+  const date = document.getElementById('sm-date').value;
+  const err = document.getElementById('sm-error');
+
+  if (!label) { err.textContent = 'Veuillez saisir un intitulé.'; err.style.display='block'; return; }
+  if (!date) { err.textContent = 'Veuillez saisir une date.'; err.style.display='block'; return; }
+  if (supplyLots.length === 0) { err.textContent = 'Veuillez ajouter au moins un lot.'; err.style.display='block'; return; }
+
+  const lotProductSelected = document.getElementById('sm-lot-product').value;
+  const expenseSelected = document.getElementById('sm-expense-select').value;
+  if (lotProductSelected || expenseSelected) {
+    if (!confirm('Un lot ou un frais est sélectionné mais n\'a pas été ajouté via le bouton "＋". Voulez-vous continuer sans l\'ajouter ?')) return;
+  }
+
+  const total = supplyLots.reduce((a,l) => a + l.qty * l.purchasePrice, 0) + supplyExpenses.reduce((a,e) => a + (parseFloat(e.amount)||0), 0);
+
+  if (editingSupplyId) {
+    const s = db.supplies.find(x => x.id === editingSupplyId);
+    s.label = label; s.date = date; s.lots = supplyLots; s.expenses = supplyExpenses; s.total = total;
+  } else {
+    db.supplies.push({ id: uid(), label, date, lots: supplyLots, expenses: supplyExpenses, total });
+  }
+
+  saveDB();
+  closeSupplyModal();
+  renderSupplies();
+}
+
+function deleteSupply(id) {
+  if (!confirm('Supprimer cet approvisionnement ?')) return;
+  db.supplies = db.supplies.filter(s => s.id !== id);
+  saveDB();
+  renderSupplies();
+}
+
+// ─── FRAIS GÉNÉRAUX ──────────────────────────────────────────────────────────
+let editingExpenseId = null;
+
+function renderExpenses() {
+  const expenses = db.expenses || [];
+  const total = expenses.reduce((a,e) => a + (parseFloat(e.amount)||0), 0);
+
+  const byCategory = {};
+  expenses.forEach(e => {
+    if (!byCategory[e.category]) byCategory[e.category] = 0;
+    byCategory[e.category] += parseFloat(e.amount) || 0;
+  });
+
+  const summaryEl = document.getElementById('expenses-summary');
+  summaryEl.innerHTML = `
+    <div class="metric red" style="grid-column:1/-1;">
+      <div class="metric-label">Total frais généraux</div>
+      <div class="metric-value red">${fmt(total)}</div>
+    </div>
+    ${Object.entries(byCategory).map(([cat, amt]) => `
+      <div class="metric">
+        <div class="metric-label">${cat}</div>
+        <div class="metric-value" style="font-size:18px;">${fmt(amt)}</div>
+      </div>`).join('')}
+  `;
+
+  const listEl = document.getElementById('expenses-list');
+  if (expenses.length === 0) {
+    listEl.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div><div class="empty-text">Aucun frais enregistré.</div></div>';
+    return;
+  }
+
+  const sorted = [...expenses].sort((a,b) => b.date.localeCompare(a.date));
+  listEl.innerHTML = sorted.map(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    const dateLabel = d.toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+    return `<div class="history-item">
+      <div class="history-header">
+        <div>
+          <div style="font-weight:500;">${e.description || e.category}</div>
+          <div class="history-detail">${e.category} · ${dateLabel}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="history-amount" style="color:var(--red);">moins ${fmt(e.amount)}</div>
+          <button class="btn btn-danger" onclick="deleteExpense('${e.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openExpenseModal(id) {
+  editingExpenseId = id;
+  document.getElementById('expense-modal-title').textContent = id ? 'Modifier un frais' : 'Ajouter un frais';
+  document.getElementById('em-error').style.display = 'none';
+  if (id) {
+    const e = db.expenses.find(x => x.id === id);
+    document.getElementById('em-category').value = e.category;
+    document.getElementById('em-desc').value = e.description || '';
+    document.getElementById('em-amount').value = e.amount;
+    document.getElementById('em-reinvesti').value = e.reinvesti || 0;
+    document.getElementById('em-date').value = e.date;
+  } else {
+    document.getElementById('em-category').value = 'Matériel';
+    document.getElementById('em-desc').value = '';
+    document.getElementById('em-amount').value = '';
+    document.getElementById('em-reinvesti').value = 0;
+    document.getElementById('em-date').value = new Date().toISOString().split('T')[0];
+  }
+  document.getElementById('expense-modal').classList.add('open');
+}
+
+function closeExpenseModal() {
+  document.getElementById('expense-modal').classList.remove('open');
+  editingExpenseId = null;
+}
+
+function saveExpense() {
+  const category = document.getElementById('em-category').value;
+  const description = document.getElementById('em-desc').value.trim();
+  const amount = parseFloat(document.getElementById('em-amount').value);
+  const reinvesti = Math.min(parseFloat(document.getElementById('em-reinvesti').value) || 0, amount || 0);
+  const date = document.getElementById('em-date').value;
+  const err = document.getElementById('em-error');
+
+  if (!amount || amount <= 0) { err.textContent = 'Montant invalide.'; err.style.display='block'; return; }
+  if (!date) { err.textContent = 'Date requise.'; err.style.display='block'; return; }
+
+  if (editingExpenseId) {
+    const e = db.expenses.find(x => x.id === editingExpenseId);
+    e.category = category; e.description = description; e.amount = amount; e.reinvesti = reinvesti; e.date = date;
+  } else {
+    db.expenses.push({ id: uid(), category, description, amount, reinvesti, date });
+  }
+
+  saveDB();
+  closeExpenseModal();
+  renderExpenses();
+}
+
+function deleteExpense(id) {
+  if (!confirm('Supprimer ce frais ?')) return;
+  db.expenses = db.expenses.filter(e => e.id !== id);
+  saveDB();
+  renderExpenses();
+  renderDashboard();
+}
+
+// ─── CAISSE ──────────────────────────────────────────────────────────────────
+function saveCaisse() {
+  db.caisse = parseFloat(document.getElementById('caisse-input').value) || 0;
+  document.getElementById('caisse-display').textContent = fmt(db.caisse);
+  document.getElementById('caisse-modal').classList.remove('open');
+  saveDB();
+}
+
+// ─── EXPORT / IMPORT ─────────────────────────────────────────────────────────
+function exportData() {
+  const json = JSON.stringify(db, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'marche-compta-' + new Date().toISOString().split('T')[0] + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportDataText() {
+  const json = JSON.stringify(db, null, 2);
+  const modal = document.getElementById('export-modal');
+  document.getElementById('export-text').value = json;
+  modal.classList.add('open');
+}
+
+function importFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.products || !data.sales || !data.payments) throw new Error('Format invalide');
+      db = data;
+      if (!db.expenses) db.expenses = [];
+      if (!db.supplies) db.supplies = [];
+      if (!db.retours) db.retours = [];
+      if (db.caisse === undefined) db.caisse = 0;
+      saveDB();
+      renderDashboard();
+    } catch(err) {
+      alert('Erreur : fichier JSON invalide.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function importFromText() {
+  const text = document.getElementById('import-text').value.trim();
+  const err = document.getElementById('import-error');
+  const success = document.getElementById('import-success');
+  err.style.display = 'none';
+  success.style.display = 'none';
+  if (!text) { err.textContent = 'Veuillez coller le texte JSON avant d\'importer.'; err.style.display='block'; return; }
+  try {
+    const data = JSON.parse(text);
+    if (!data.products || !data.sales || !data.payments) throw new Error('Format invalide');
+    db = data;
+    saveDB();
+    document.getElementById('import-text').value = '';
+    renderDashboard();
+    success.textContent = 'Données importées avec succès ! Vous pouvez fermer cette fenêtre.';
+    success.style.display = 'block';
+  } catch(err2) {
+    err.textContent = 'Erreur : le texte collé n\'est pas un JSON valide. Vérifie que tu as bien tout copié depuis l\'export.';
+    err.style.display = 'block';
+  }
+}
+
+document.getElementById('import-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+function selectExportText() {
+  const ta = document.getElementById('export-text');
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+}
+
+document.getElementById('supply-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeSupplyModal();
+});
+document.getElementById('expense-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeExpenseModal();
+});
+document.getElementById('reappro-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeReapproModal();
+});
+document.getElementById('export-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+document.getElementById('product-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeProductModal();
+});
+
+// ─── RETOUR ARTICLE ──────────────────────────────────────────────────────────
+function initRetourForm() {
+  const days = getMarketDays(60);
+  const sel = document.getElementById('retour-date');
+  sel.innerHTML = days.map(d => `<option value="${dateStr(d)}">${formatMarketDate(dateStr(d))}</option>`).join('');
+
+  const psel = document.getElementById('retour-product');
+  psel.innerHTML = '<option value="">— Sélectionner un produit —</option>';
+  const sorted = [...db.products].sort((a,b) => getStock(b.id) - getStock(a.id));
+  sorted.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = productLabel(p);
+    psel.appendChild(opt);
+  });
+
+  document.getElementById('retour-qty').value = 1;
+  document.getElementById('retour-price').value = '';
+  document.getElementById('retour-total-display').textContent = '';
+  document.getElementById('retour-error').style.display = 'none';
+  document.getElementById('retour-product-info').style.display = 'none';
+}
+
+function onRetourProductChange() {
+  const pid = document.getElementById('retour-product').value;
+  const info = document.getElementById('retour-product-info');
+  if (!pid) { info.style.display = 'none'; return; }
+  const p = db.products.find(x => x.id === pid);
+  document.getElementById('retour-price').value = p.salePrice || '';
+  info.style.display = 'block';
+  info.textContent = `Prix de vente habituel : ${fmt(p.salePrice)} — Stock actuel : ${getStock(pid)}`;
+  updateRetourTotal();
+}
+
+function updateRetourTotal() {
+  const qty = parseInt(document.getElementById('retour-qty').value) || 0;
+  const price = parseFloat(document.getElementById('retour-price').value) || 0;
+  const total = qty * price;
+  document.getElementById('retour-total-display').textContent = total > 0 ? '− ' + fmt(total) : '';
+}
+
+function validateRetour() {
+  const pid = document.getElementById('retour-product').value;
+  const qty = parseInt(document.getElementById('retour-qty').value);
+  const price = parseFloat(document.getElementById('retour-price').value);
+  const date = document.getElementById('retour-date').value;
+  const err = document.getElementById('retour-error');
+
+  if (!pid) { err.textContent = 'Veuillez sélectionner un produit.'; err.style.display = 'block'; return; }
+  if (!qty || qty <= 0) { err.textContent = 'Quantité invalide.'; err.style.display = 'block'; return; }
+  if (!price || price <= 0) { err.textContent = 'Prix invalide.'; err.style.display = 'block'; return; }
+  if (!date) { err.textContent = 'Date requise.'; err.style.display = 'block'; return; }
+
+  db.retours.push({ id: uid(), productId: pid, date, qty, price, encaissee: true });
+  saveDB();
+  initRetourForm();
+  renderDashboard();
+  showPage('dashboard');
+}
+
+// ─── STATISTIQUES ────────────────────────────────────────────────────────────
+function initStats() {
+  const years = new Set();
+  const currentYear = new Date().getFullYear();
+  years.add(currentYear);
+  db.sales.forEach(s => years.add(parseInt(s.date.slice(0,4))));
+  db.expenses.forEach(e => years.add(parseInt(e.date.slice(0,4))));
+
+  const sel = document.getElementById('stats-year');
+  const prevYear = sel.value;
+  sel.innerHTML = [...years].sort((a,b) => b-a).map(y => `<option value="${y}"${y == (prevYear||currentYear) ? ' selected' : ''}>${y}</option>`).join('');
+  renderStats();
+}
+
+function computeMonthStats(year, month) {
+  const prefix = `${year}-${String(month).padStart(2,'0')}`;
+  const sales = db.sales.filter(s => s.date.startsWith(prefix));
+
+  let ca = 0;
+  let coutFifo = 0;
+  let coutPropreFifo = 0;
+
+  sales.forEach(s => {
+    const amt = s.totalAmount || ((parseFloat(s.price)||0) * (parseInt(s.qty)||0));
+    ca += amt;
+    const p = db.products.find(x => x.id === s.productId);
+    if (!p) return;
+    const qty = parseInt(s.qty) || 0;
+    const lots = p.lots && p.lots.length ? p.lots : [{ qty: parseInt(p.initialStock)||0, purchasePrice: parseFloat(p.purchasePrice)||0, reinvesti: 0 }];
+    let remaining = qty;
+    for (const lot of lots) {
+      if (remaining <= 0) break;
+      const take = Math.min(remaining, parseInt(lot.qty)||0);
+      const unitPrice = parseFloat(lot.purchasePrice)||0;
+      const lotVal = take * unitPrice;
+      const reinvestiRatio = lotVal > 0 ? Math.min(parseFloat(lot.reinvesti)||0, lotVal) / lotVal : 0;
+      coutFifo += lotVal;
+      coutPropreFifo += lotVal * (1 - reinvestiRatio);
+      remaining -= take;
+    }
+  });
+
+  const retoursMois = (db.retours||[]).filter(r => r.date.startsWith(prefix));
+  retoursMois.forEach(r => {
+    ca -= (parseFloat(r.price)||0) * (parseInt(r.qty)||0);
+  });
+
+  const frais = (db.expenses || []).filter(e => e.date.startsWith(prefix)).reduce((a,e) => a + (parseFloat(e.amount)||0), 0);
+  const fraisPropre = (db.expenses || []).filter(e => e.date.startsWith(prefix)).reduce((a,e) => {
+    const amt = parseFloat(e.amount)||0;
+    return a + amt - Math.min(parseFloat(e.reinvesti)||0, amt);
+  }, 0);
+
+  return {
+    ca,
+    beneficeReel: ca - coutFifo - frais,
+    beneficePropre: ca - coutPropreFifo - fraisPropre,
+    frais,
+  };
+}
+
+function renderStats() {
+  const year = parseInt(document.getElementById('stats-year').value);
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+  let totalCA = 0, totalBeneficeReel = 0, totalBeneficePropre = 0, totalFrais = 0;
+  const monthData = months.map((name, i) => {
+    const d = computeMonthStats(year, i + 1);
+    totalCA += d.ca;
+    totalBeneficeReel += d.beneficeReel;
+    totalBeneficePropre += d.beneficePropre;
+    totalFrais += d.frais;
+    return { name, ...d };
+  });
+
+  let html = `
+    <h2 style="font-family:'Playfair Display',serif;font-size:16px;color:var(--green);margin-bottom:10px;">Total ${year}</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
+      <div class="metric"><div class="metric-label">Chiffre d'affaires</div><div class="metric-value" style="font-size:18px;">${fmt(totalCA)}</div></div>
+      <div class="metric"><div class="metric-label">Frais généraux</div><div class="metric-value" style="font-size:18px;">${fmt(totalFrais)}</div></div>
+      <div class="metric green"><div class="metric-label">Bénéfice réel</div><div class="metric-value green" style="font-size:18px;">${fmt(totalBeneficeReel)}</div></div>
+      <div class="metric" style="background:var(--green-pale);border:1.5px solid #b0d4b8;"><div class="metric-label">Bénéfice propre</div><div class="metric-value" style="color:var(--green);font-size:18px;">${fmt(totalBeneficePropre)}</div></div>
+    </div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:16px;color:var(--green);margin-bottom:10px;">Détail par mois</h2>`;
+
+  monthData.forEach(d => {
+    html += `
+    <h3 style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;">${d.name}</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px;">
+      <div style="background:var(--bg2);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">CA</div>
+        <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(d.ca)}</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Frais</div>
+        <div style="font-family:'Playfair Display',serif;font-size:15px;">${fmt(d.frais)}</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Bénéfice réel</div>
+        <div style="font-family:'Playfair Display',serif;font-size:15px;color:${d.beneficeReel >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(d.beneficeReel)}</div>
+      </div>
+      <div style="background:var(--green-pale);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Bénéfice propre</div>
+        <div style="font-family:'Playfair Display',serif;font-size:15px;color:${d.beneficePropre >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(d.beneficePropre)}</div>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('stats-content').innerHTML = html;
+}
+
+// ─── CONGÉS ──────────────────────────────────────────────────────────────────
+function getCongeMarketDays() {
+  const excluded = new Set();
+  (db.conges||[]).forEach(c => {
+    const cur = new Date(c.debut + 'T00:00:00');
+    const end = new Date(c.fin + 'T00:00:00');
+    while (cur <= end) {
+      if ([2,4,6].includes(cur.getDay())) excluded.add(cur.toISOString().split('T')[0]);
+      cur.setDate(cur.getDate()+1);
+    }
+  });
+  return excluded;
+}
+
+function countMarketDaysExcluding(startDate, endDate) {
+  const excluded = getCongeMarketDays();
+  let count = 0;
+  const cur = new Date(startDate + 'T00:00:00');
+  const end = new Date(endDate + 'T00:00:00');
+  while (cur <= end) {
+    const ds = cur.toISOString().split('T')[0];
+    if ([2,4,6].includes(cur.getDay()) && !excluded.has(ds)) count++;
+    cur.setDate(cur.getDate()+1);
+  }
+  return count;
+}
+
+function saveConge() {
+  const debut = document.getElementById('conge-debut').value;
+  const fin = document.getElementById('conge-fin').value;
+  const motif = document.getElementById('conge-motif').value.trim();
+  const err = document.getElementById('conge-error');
+  if (!debut) { err.textContent = 'Date de début requise.'; err.style.display='block'; return; }
+  if (!fin) { err.textContent = 'Date de fin requise.'; err.style.display='block'; return; }
+  if (fin < debut) { err.textContent = 'La date de fin doit être après le début.'; err.style.display='block'; return; }
+  err.style.display = 'none';
+  db.conges.push({ id: uid(), debut, fin, motif });
+  saveDB();
+  document.getElementById('conge-debut').value = '';
+  document.getElementById('conge-fin').value = '';
+  document.getElementById('conge-motif').value = '';
+  document.getElementById('conge-preview').textContent = '';
+  renderConges();
+}
+
+function renderConges() {
+  const debut = document.getElementById('conge-debut').value;
+  const fin = document.getElementById('conge-fin').value;
+  if (debut && fin && fin >= debut) {
+    const nb = countMarketDaysExcluding(debut, fin);
+    document.getElementById('conge-preview').textContent = `Jours de marché concernés : ${nb}`;
+  }
+
+  const el = document.getElementById('conges-list');
+  if (!db.conges || db.conges.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🏖</div><div class="empty-text">Aucune période de congé enregistrée.</div></div>';
+    return;
+  }
+  const sorted = [...db.conges].sort((a,b) => b.debut.localeCompare(a.debut));
+  el.innerHTML = sorted.map(c => {
+    const d1 = new Date(c.debut+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+    const d2 = new Date(c.fin+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+    const nb = countMarketDaysExcluding(c.debut, c.fin);
+    return `<h2 class="history-group-title" style="cursor:default;">
+      <span>${c.motif || 'Congé'} — du ${d1} au ${d2}</span>
+      <span>${nb} jour(s) de marché exclus</span>
+    </h2>
+    <div style="text-align:right;margin-bottom:8px;">
+      <button class="btn btn-danger btn-sm" onclick="deleteConge('${c.id}')">Supprimer</button>
+    </div>`;
+  }).join('');
+}
+
+function deleteConge(id) {
+  db.conges = db.conges.filter(c => c.id !== id);
+  saveDB();
+  renderConges();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+loadDB();
+renderDashboard();
+</script>
+</body>
+</html>
